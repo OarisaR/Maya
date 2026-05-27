@@ -8,7 +8,8 @@
 
 Maya is an evidence‑backed, safety‑first conversational assistant for pregnancy care. It pairs a short, auditable safety classifier with retrieval‑augmented generation so answers cite trusted clinical sources and emergencies are escalated before any generative step.
 
-Built with: React · TypeScript · Vite · FastAPI · Python · Firebase (Auth / RTDB) · Groq LLaMA · Pinecone
+**Built with:**  
+![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white) ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?logo=fastapi&logoColor=white) ![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white) ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=black) ![Groq](https://img.shields.io/badge/-Groq%20LLaMA-000?logo=groq) ![Pinecone](https://img.shields.io/badge/-Pinecone-000?logo=pinecone)
 
 ---
 
@@ -58,23 +59,6 @@ Sequence notes:
 - `llm.call_llm_stream()` yields token deltas for SSE streaming to the client.
 
 ---
-
-## Executive summary
-
-- Problem: Pregnant users face fragmented guidance and risk receiving reassuring-but-incorrect advice from unconstrained LLMs during emergencies.
-- Solution: Maya combines a deterministic safety classifier (runs first) with RAG over verified clinical documents and a streamed LLM response. Answers always include source citations shown separately.
-- What to look for in the demo:
-	- Safety-first behavior: enter red-flag phrases (e.g., "severe bleeding", "baby not moving") and confirm the system escalates immediately.
-	- Traceability: every non-emergency answer should display source snippets and metadata.
-	- Personalization: set pregnancy week in profile and ask stage-specific questions to see tailored guidance.
-	- UX: streaming answers (progressive tokens) and clear next-steps / confidence notes.
-
-Quick judge checklist:
-- Does the system refuse to generate if emergency=true? ✅
-- Are citation sources visible and meaningful? ✅
-- Is the tone warm, clear, and trimester‑aware? ✅
-- Can the judge reproduce the demo in ~5 minutes following the Getting Started steps? ✅
-
 
 ## Getting started
 
