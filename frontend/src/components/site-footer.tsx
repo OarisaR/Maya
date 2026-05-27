@@ -19,6 +19,7 @@ export function SiteFooter() {
         </div>
         <FooterCol title={tr("footer_product", lang)} links={[
           [tr("footer_chat", lang), "/chat"],
+          ["Docs", "/docs"],
           [tr("nav_signin", lang), "/login"],
         ]} />
         <FooterCol title={tr("footer_company", lang)} links={[
