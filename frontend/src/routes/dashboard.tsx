@@ -64,10 +64,8 @@ function Dashboard() {
       <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
           <div>
-            <Badge variant="secondary" className="rounded-full mb-3">
-              <Sparkles className="w-3 h-3 mr-1 text-primary" />{tr("dash_badge", lang)}
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">{tr("dash_h1", lang)}</h1>
+        
+            <h1 className="mt-15 text-4xl md:text-5xl font-semibold tracking-tight">{tr("dash_h1", lang)}</h1>
             <p className="mt-2 text-muted-foreground">{tr("dash_p", lang)}</p>
           </div>
           <Button asChild className="rounded-full">

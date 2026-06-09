@@ -49,10 +49,11 @@ function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-[image:var(--gradient-hero)] opacity-80 -z-10" />
+      
       <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/20 blur-3xl -z-10" />
       <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-pink/30 blur-3xl -z-10" />
 
-      <div className="max-w-7xl mx-auto px-6 pt-20 pb-28 grid lg:grid-cols-2 gap-14 items-center">
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-28 grid lg:grid-cols-2 gap-14 items-center">
         <div>
           <Badge variant="secondary" className="rounded-full px-3 py-1 mb-6 bg-background/70 backdrop-blur">
             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-primary" />

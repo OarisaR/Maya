@@ -10,9 +10,12 @@ def build_prompt(question: str, chunks: list, history: list = None, week: int = 
         history = []
         
     context = "\n\n".join([
-        f"[Source: {c['source']}, Page {c['page']}, {c['source_org']} {c['pub_year']}]\n{c['content']}"
-        for c in chunks
-    ])
+    f"[Source: {c['source']}, {c['source_org']}"
+    f"{', Page ' + str(c['page']) if c.get('page') and c['page'] != -1 else ''}"
+    f"{', week ' + str(c['week']) if isinstance(c.get('week'), int) and c['week'] > 0 else ''}"
+    f"]\n{c['content']}"
+    for c in chunks
+])
 
     history_text = ""
     if history:
@@ -28,7 +31,6 @@ def build_prompt(question: str, chunks: list, history: list = None, week: int = 
     else:
         week_context = ""
 
-    # emergency instruction overrides normal behaviour
     emergency_instruction = """
 IMPORTANT: The user's message contains potential emergency symptoms.
 Respond with urgent care, warm but serious tone. Tell them to contact their doctor 
@@ -40,6 +42,7 @@ Do NOT downplay the symptoms.
 
     return f"""You are Maya, a warm and knowledgeable maternal health AI assistant for pregnant women.
 {week_context}{emergency_instruction}Answer the user's question using ONLY the context provided below.
+Ensure your responses are structured format with bulletins, newlines and sections where appropriate.
 Do NOT include inline citations or source references in your answer — sources will be shown separately.
 If the context is insufficient, say so clearly and recommend consulting a healthcare professional.
 Never make up information. Never assume medical history not mentioned by the user.

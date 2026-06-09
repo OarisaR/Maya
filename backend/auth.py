@@ -8,7 +8,9 @@ _ADMIN_EMAILS = {email.strip().lower() for email in os.getenv("DOCS_ADMIN_EMAILS
 _ADMIN_UIDS = {uid.strip() for uid in os.getenv("DOCS_ADMIN_UIDS", "").split(",") if uid.strip()}
 
 cred = credentials.Certificate("serviceAccount.json")
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {
+    "databaseURL": os.getenv("FIREBASE_DATABASE_URL")
+})
 
 def verify_token(authorization: str = Header(...)):
     if not authorization.startswith("Bearer "):
@@ -20,6 +22,20 @@ def verify_token(authorization: str = Header(...)):
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid or expired token") 
     # 401 is unauthorized, 403 is forbidden, but 401 is more appropriate for invalid tokens 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def verify_admin_token(authorization: str = Header(...)):

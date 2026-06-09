@@ -31,10 +31,8 @@ function Emergency() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <Badge variant="secondary" className="rounded-full mb-3 bg-destructive/10 text-destructive">
-          <ShieldAlert className="w-3 h-3 mr-1" />{tr("emg_badge", lang)}
-        </Badge>
-        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">{tr("emg_h1", lang)}</h1>
+       
+        <h1 className="mt-15 text-4xl md:text-5xl font-semibold tracking-tight">{tr("emg_h1", lang)}</h1>
         <p className="mt-3 text-muted-foreground max-w-2xl text-lg">{tr("emg_p", lang)}</p>
 
         <Card className="mt-8 p-6 md:p-8 rounded-3xl border-destructive/40 bg-destructive/5">

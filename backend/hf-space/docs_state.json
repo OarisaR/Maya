@@ -1,0 +1,439 @@
+{
+  "id": "maya-docs",
+  "slug": "docs",
+  "title": "Maya Docs",
+  "subtitle": "YC-style pitch deck + living technical documentation",
+  "tagline": "A controlled, live documentation system for judges, investors, and the team.",
+  "summary": "A public docs experience that explains the product in two minutes, the system in ten, and the governance in one glance.",
+  "status": "published",
+  "version": 1,
+  "publishedAt": "2026-05-26T17:30:40Z",
+  "updatedAt": "2026-05-26T17:30:40Z",
+  "updatedBy": null,
+  "visibility": {
+    "enabled": true,
+    "mode": "window",
+    "timezone": "UTC",
+    "startAt": "2026-05-01T00:00:00Z",
+    "endAt": "2026-12-31T23:59:59Z",
+    "durationHours": null
+  },
+  "team": {
+    "name": "Maya Core Team",
+    "members": [
+      {
+        "fullName": "Oarisa Rebayet",
+        "role": "Team Leader / Project Coordinator",
+        "email": "orebayet@gmail.com",
+        "photoUrl": ""
+      },
+      {
+        "fullName": "Tahmima Hoque",
+        "role": "Scraper Engineer",
+        "email": "tahmima@gmail.com",
+        "photoUrl": ""
+      },
+      {
+        "fullName": "Fawzia Tabassum",
+        "role": "AI / Retrieval",
+        "email": "fawzia@gmail.com",
+        "photoUrl": ""
+      },
+      {
+        "fullName": "Umme Sanjida",
+        "role": "UI/UX / Frontend Developer",
+        "email": "umme@gmail.com",
+        "photoUrl": ""
+      }
+    ]
+  },
+  "pitchDeck": [
+    {
+      "id": "problem",
+      "title": "Problem",
+      "eyebrow": "YC pitch deck",
+      "summary": "Pregnant people still bounce between fragmented guidance, emergency uncertainty, and weak digital continuity.",
+      "bullets": [
+        "Support is often generic, not stage-aware, and not emotionally calm.",
+        "Emergency symptoms are easy to miss when guidance is buried in long content.",
+        "Families and clinicians need a shared, understandable system view."
+      ]
+    },
+    {
+      "id": "solution",
+      "title": "Solution",
+      "summary": "Maya combines maternal chat support, tracker context, safety escalation, and a live docs layer that explains the whole product.",
+      "bullets": [
+        "Fast, compassionate answers tuned to pregnancy week and user context.",
+        "A tracker that keeps the journey visible and understandable.",
+        "A docs module that acts as pitch deck, whitepaper, and live dashboard."
+      ]
+    },
+    {
+      "id": "why-now",
+      "title": "Why Now",
+      "summary": "AI makes continuous support affordable, while healthcare users expect clearer digital transparency and scheduled access windows.",
+      "bullets": [
+        "LLMs and retrieval can turn static care guidance into on-demand support.",
+        "Low-friction publishing helps teams present to judges and investors on a schedule.",
+        "Safety, privacy, and explainability are now product differentiators."
+      ]
+    },
+    {
+      "id": "product-demo",
+      "title": "Product Demo",
+      "summary": "The app pairs chat, tracker, emergency support, and documentation so a user can understand the product quickly.",
+      "bullets": [
+        "Chat for guided maternal Q&A.",
+        "Tracker for pregnancy-week context.",
+        "Emergency page for fast escalation."
+      ]
+    },
+    {
+      "id": "market",
+      "title": "Market Opportunity",
+      "summary": "Maternal health support spans consumers, clinics, and public-health programs that all need better digital continuity.",
+      "bullets": [
+        "Direct-to-consumer mothers and caregivers.",
+        "Clinics and maternal programs that need better education surfaces.",
+        "Institutional preview and judging workflows that require controlled access."
+      ]
+    },
+    {
+      "id": "business-model",
+      "title": "Business Model",
+      "summary": "The product can grow through consumer access, clinical partnerships, and hosted showcase / evaluation deployments.",
+      "bullets": [
+        "Freemium support for end users.",
+        "B2B / partner licensing for organizations.",
+        "Scheduled showcase windows for demo, judging, and investor review."
+      ]
+    },
+    {
+      "id": "traction",
+      "title": "Traction",
+      "summary": "The product already has a working chat experience, tracker, emergency view, and a structured frontend / backend architecture.",
+      "bullets": [
+        "Authenticated chat flow with streaming responses.",
+        "Frontend state persisted per user.",
+        "Deployment-ready FastAPI backend and SSR frontend shell."
+      ]
+    },
+    {
+      "id": "competition",
+      "title": "Competition",
+      "summary": "Generic health chatbots, static pregnancy apps, and docs tools each cover only one layer of the experience.",
+      "bullets": [
+        "Most competitors stop at chat or content, not both.",
+        "Few systems offer controlled publishing windows for public review.",
+        "Maya unifies product narrative, engineering detail, and live state."
+      ]
+    },
+    {
+      "id": "advantage",
+      "title": "Unique Advantage",
+      "summary": "Maya pairs maternal care UX with a living docs layer that stays consistent with product state.",
+      "bullets": [
+        "Docs reflect current access rules, live sections, and publish status.",
+        "The team can turn the showcase on or off instantly.",
+        "The same page works as a pitch deck, technical whitepaper, and system dashboard."
+      ]
+    },
+    {
+      "id": "go-to-market",
+      "title": "Go-To-Market",
+      "summary": "Start with controlled showcase periods, then expand into partner demos and broader user onboarding.",
+      "bullets": [
+        "Use the June 10-14 judging window by default.",
+        "Share a single trusted /docs link for reviews.",
+        "Promote the live app once the pitch content is aligned with product state."
+      ]
+    },
+    {
+      "id": "team",
+      "title": "Team",
+      "summary": "The team section is built into the docs deck so reviewers can verify the people behind the product.",
+      "bullets": [
+        "Uniform member cards with fallback avatars.",
+        "Name, role, and email visible in a clean grid.",
+        "Admin-editable for showcase accuracy."
+      ]
+    },
+    {
+      "id": "vision",
+      "title": "Vision",
+      "summary": "Maya becomes the trusted maternal companion and the clearest live product narrative for every audience.",
+      "bullets": [
+        "A calmer, more explainable maternal care experience.",
+        "A reusable docs platform for future launches.",
+        "A global standard for controlled, live documentation."
+      ]
+    }
+  ],
+  "productOverview": {
+    "whatItDoes": "Maya helps pregnant users ask questions, understand symptoms, follow their pregnancy week by week, and escalate urgent concerns.",
+    "targetUsers": [
+      "Pregnant users",
+      "Partners / caregivers",
+      "Clinicians / reviewers",
+      "Judges / investors"
+    ],
+    "coreUseCases": [
+      "Pregnancy Q&A and emotional reassurance",
+      "Week-by-week progress tracking",
+      "Emergency awareness and triage guidance",
+      "Public showcase and documentation review"
+    ]
+  },
+  "featureMatrix": [
+    {
+      "name": "Chat support",
+      "status": "current",
+      "source": "Live app",
+      "notes": "Streaming maternal Q&A with safety awareness."
+    },
+    {
+      "name": "Pregnancy tracker",
+      "status": "current",
+      "source": "Live app",
+      "notes": "Week-by-week milestone experience."
+    },
+    {
+      "name": "Emergency page",
+      "status": "current",
+      "source": "Live app",
+      "notes": "Fast access to red-flag symptoms and urgent advice."
+    },
+    {
+      "name": "Docs publishing controls",
+      "status": "current",
+      "source": "Docs module",
+      "notes": "Visibility toggle and scheduled access windows."
+    },
+    {
+      "name": "WYSIWYG editing",
+      "status": "upcoming",
+      "source": "Admin panel",
+      "notes": "Section-based editing with drag/drop reorder."
+    },
+    {
+      "name": "PDF export",
+      "status": "upcoming",
+      "source": "Docs module",
+      "notes": "Browser print-to-PDF flow and shareable exports."
+    },
+    {
+      "name": "Plugin sections",
+      "status": "planned",
+      "source": "Docs module",
+      "notes": "Modular sections for future product areas."
+    }
+  ],
+  "architecture": {
+    "mermaid": "flowchart LR\n  UI[Frontend UI] --> API[FastAPI API]\n  API --> RAG[RAG / Safety / LLM]\n  API --> DB[(Realtime State / Docs File)]\n  API --> DOCS[Docs Renderer]\n  DOCS --> UI"
+  },
+  "dataFlow": {
+    "mermaid": "flowchart LR\n  Input[User / Admin Input] --> Process[Validation + RBAC + Scheduling]\n  Process --> AI[LLM / Retrieval]\n  AI --> Output[Answer / Docs Payload]\n  Output --> Feedback[Usage + Version History]"
+  },
+  "technologyStack": {
+    "frontend": [
+      "React",
+      "TanStack Router",
+      "TanStack Query",
+      "Tailwind CSS",
+      "Firebase Auth / RTDB"
+    ],
+    "backend": [
+      "FastAPI",
+      "Pydantic",
+      "Firebase Admin",
+      "Streaming SSE"
+    ],
+    "data": [
+      "Firebase Realtime Database patterns",
+      "File-backed docs state"
+    ],
+    "ai": [
+      "RAG",
+      "Safety checks",
+      "Streaming LLM responses"
+    ],
+    "infra": [
+      "Vite / SSR shell",
+      "Docker",
+      "Cloud deployment-ready"
+    ]
+  },
+  "apiDocumentation": [
+    {
+      "method": "GET",
+      "path": "/docs",
+      "auth": "public",
+      "description": "Public docs payload if visibility window is open.",
+      "status": "live"
+    },
+    {
+      "method": "GET",
+      "path": "/docs/admin",
+      "auth": "admin",
+      "description": "Full docs payload for editing and publishing.",
+      "status": "live"
+    },
+    {
+      "method": "PUT",
+      "path": "/docs/admin",
+      "auth": "admin",
+      "description": "Save the full docs draft or publish snapshot.",
+      "status": "live"
+    },
+    {
+      "method": "PATCH",
+      "path": "/docs/admin/visibility",
+      "auth": "admin",
+      "description": "Toggle visibility or reschedule availability.",
+      "status": "live"
+    },
+    {
+      "method": "GET",
+      "path": "/docs/export/markdown",
+      "auth": "public when open",
+      "description": "Download the docs as Markdown.",
+      "status": "live"
+    }
+  ],
+  "dataLayer": {
+    "sources": [
+      "Feature module",
+      "Users",
+      "API routes",
+      "Admin events"
+    ],
+    "storage": [
+      "Docs state file",
+      "Firebase user profile patterns"
+    ],
+    "privacy": [
+      "Public docs only show approved content",
+      "Admin auth required for editing",
+      "Visibility windows can hide content completely"
+    ]
+  },
+  "aiLayer": {
+    "models": [
+      "RAG retrieval",
+      "Streaming generation",
+      "Safety classifier"
+    ],
+    "retrieval": [
+      "Questions to chunks",
+      "Context-aware prompt building",
+      "Citations / source payloads"
+    ],
+    "personalization": [
+      "Pregnancy week context",
+      "Emergency-aware tone",
+      "User history"
+    ],
+    "explainability": [
+      "Source snippets",
+      "Transparent docs sections",
+      "Version history"
+    ]
+  },
+  "roadmap": {
+    "shortTerm": [
+      "Section editor polish",
+      "Better markdown export",
+      "Public read-only share links"
+    ],
+    "midTerm": [
+      "Plugin-based section registry",
+      "Version compare",
+      "Reviewer annotations"
+    ],
+    "longTerm": [
+      "Multi-language docs publishing",
+      "GraphRAG system map",
+      "Investor packet automation"
+    ]
+  },
+  "performance": {
+    "loadExpectations": [
+      "Fast initial render",
+      "Lazy-loaded admin controls",
+      "Static section navigation"
+    ],
+    "optimization": [
+      "Cache docs payload",
+      "Avoid repeated auth lookups",
+      "Render heavy sections on demand"
+    ]
+  },
+  "security": {
+    "auth": [
+      "Firebase token verification",
+      "Admin custom claims / allow-list fallback"
+    ],
+    "rbac": [
+      "Public reader vs admin editor",
+      "Visibility windows enforced on the server"
+    ],
+    "dataProtection": [
+      "No public editing",
+      "Sanitized payload updates",
+      "Private draft snapshots"
+    ]
+  },
+  "analytics": {
+    "kpis": [
+      "Docs visits",
+      "Section clicks",
+      "Admin publish actions",
+      "Export downloads"
+    ],
+    "metrics": [
+      "Time to understand product",
+      "Engagement with team section",
+      "Window compliance"
+    ]
+  },
+  "extensibility": {
+    "modules": [
+      "Pitch deck",
+      "Technical whitepaper",
+      "System dashboard",
+      "Team showcase"
+    ],
+    "pluginSupport": [
+      "Section registry",
+      "Custom cards",
+      "External data hooks"
+    ]
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-05-26T17:30:40Z",
+      "changes": [
+        "Initial live docs deck",
+        "Admin visibility scheduling",
+        "Team showcase and exports"
+      ]
+    }
+  ],
+  "live": {
+    "lastSyncedAt": "2026-05-26T17:30:40Z",
+    "recentEvents": [
+      "Docs state loaded from backend store",
+      "Visibility checks computed on request",
+      "Admin editor can publish a new snapshot"
+    ]
+  },
+  "versions": [
+    {
+      "version": 1,
+      "publishedAt": "2026-05-26T17:30:40Z",
+      "note": "Initial seed"
+    }
+  ]
+}

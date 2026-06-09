@@ -1,9 +1,10 @@
+// chat.tsx
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Heart, Plus, Search, MessageCircle, Pin, Archive, Trash2, Settings, LogOut,
-  Activity, AlertTriangle, Send, Mic, Paperclip, Sparkles, Sun, Moon,
-  PanelLeftClose, PanelLeft, MoreHorizontal, ShieldAlert, Baby, Languages
+  Activity, AlertTriangle, Send, Mic, Paperclip, Sparkles, Sun, Moon, ChevronRight, ArrowLeft, Bell, 
+  PanelLeftClose, PanelLeft, MoreHorizontal, ShieldAlert, Baby, Languages, Copy, Check, ThumbsUp, ThumbsDown,Pill, FileText, X, Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,20 +22,18 @@ import { toast } from "sonner";
 import icon from "@/assets/icon.svg";
 import { useLang } from "@/contexts/lang-context";
 import { tr } from "@/i18n/translations";
-import { loadChats, saveChat, deleteChat, saveUserWeek, loadUserWeek } from "@/lib/chats";
+import { loadChats, saveChat, deleteChat, saveUserWeek, loadUserWeek, loadReports, saveReport, deleteReport, loadHealthProfile, saveHealthProfile, loadMedications,loadAppointments, type Appointment, type Report, type HealthProfile, getSuggestedAppointments } from "@/lib/chats";
+import ReactMarkdown from "react-markdown";
+import { OnboardingFlow } from "@/components/OnboardingFlow";
+import { checkOnboarding } from "@/lib/chats";
+import { SettingsDialog } from "@/components/SettingsDialog";
+import { PregnancyTracker, type PanelType } from "@/components/PregnancyTracker";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({ meta: [{ title: "Chat | Maya" }, { name: "description", content: "Chat with Maya, your AI maternal companion." }] }),
   component: ChatPage,
 });
 
-type Msg = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  emergency?: boolean;
-  sources?: Source[];
-};
 
 type Source = {
   source: string;
@@ -43,8 +42,26 @@ type Source = {
   pub_year: number;
   score: number;
 };
-type Chat = { id: string; title: string; messages: Msg[]; pinned?: boolean; archived?: boolean; createdAt: number };
+type Msg = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  emergency?: boolean;
+  sources?: Source[];
+  attachedFile?: string;
+  feedback?: "up" | "down" | null;
+};
 
+type Chat = {
+  id: string;
+  title: string;
+  messages: Msg[];
+  pinned?: boolean;
+  archived?: boolean;
+  createdAt: number;
+  reportId?: string;
+  extractedText?: string;
+};
 const SUGGESTIONS = [
   "I have a headache during pregnancy",
   "Is stomach pain normal during pregnancy?",
@@ -71,7 +88,7 @@ function generateReply(prompt: string): { text: string; emergency: boolean } {
 }
 
 function ChatPage() {
-  const { lang } = useLang();
+  const { lang, setLang } = useLang();
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
   const [chats, setChats] = useState<Chat[]>([]);
@@ -83,83 +100,287 @@ function ChatPage() {
   const [pregWeek, setPregWeek] = useState(24);
   const weekLoaded = useRef(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
-
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user, logout, loading } = useAuth();
+  const [profile, setProfile] = useState<HealthProfile | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [filesExpanded, setFilesExpanded] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [notification, setNotification] = useState<{ message: string; icon: React.ReactNode } | null>(null);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (loading) return;
-    if (!user) { navigate({ to: "/login" }); return; }
 
-    loadUserWeek(user.uid).then(w => {
+  const [trackerOpen, setTrackerOpen] = useState(false);
+const [trackerTab, setTrackerTab] = useState<PanelType>("overview");
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+
+
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return;
+  //   if (loading) return;
+  //   if (!user) { navigate({ to: "/login" }); return; }
+
+  //   loadUserWeek(user.uid).then(w => {
+  //     if (w !== null) setPregWeek(w);
+  //     weekLoaded.current = true;
+  //   });
+
+  //   loadChats(user.uid).then(loaded => {
+  //     setChats(loaded);
+  //   });
+
+  //   loadReports(user.uid).then(loaded => {
+  //     setReports(loaded);
+  //   });
+  // }, [user, loading, navigate]);
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+  if (loading) return;
+  if (!user) {
+    navigate({ to: "/login" });
+    return;
+  }
+
+  const run = async () => {
+    const profile = await loadHealthProfile(user.uid);
+    const loadedAppointments = await loadAppointments(user.uid);
+    setAppointments(loadedAppointments);
+    // Auto-calculate week from due date
+    if (profile?.dueDate) {
+      const daysLeft = Math.ceil((new Date(profile.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      const autoWeek = Math.min(40, Math.max(1, 40 - Math.floor(daysLeft / 7)));
+      setPregWeek(autoWeek);
+      await saveUserWeek(user.uid, autoWeek);
+    } else {
+      const w = await loadUserWeek(user.uid);
       if (w !== null) setPregWeek(w);
-      weekLoaded.current = true;
-    });
+    }
+    weekLoaded.current = true;
 
-    loadChats(user.uid).then(loaded => {
-      setChats(loaded);
-    });
-  }, [user, loading, navigate]);
+    const onboarded = await checkOnboarding(user.uid);
+    setShowOnboarding(!onboarded);
 
-  useEffect(() => {
-    if (!user || !weekLoaded.current) return;  // skip until loaded
-    saveUserWeek(user.uid, pregWeek);
-  }, [pregWeek, user]);
+    const loadedChats = await loadChats(user.uid);
+    setChats(loadedChats);
 
-  useEffect(() => {
+    const loadedReports = await loadReports(user.uid);
+    setReports(loadedReports);
+  };
+
+  run();
+}, [user, loading, navigate]);
+
+useEffect(() => {
+  if (!user) return;
+  loadHealthProfile(user.uid).then(p => setProfile(p));
+}, [user]);
+
+
+useEffect(() => {
+  if (!user || !profile) return;
+  
+  const today = new Date().toISOString().split("T")[0];
+  if (profile.lastNotificationDate === today) return;
+  
+  let cancelled = false;
+  
+  const runNotification = async () => {
+    let message = "";
+    let icon: React.ReactNode = null;
+    
+    const meds = await loadMedications(user.uid);
+    if (cancelled) return;
+    
+    const medEnabled = profile?.notifications?.medication !== false;
+    if (meds.length > 0 && medEnabled) {
+        const dayIndex = new Date().getDay();
+        const todayMed = meds[dayIndex % meds.length];
+        message = `Good morning, ${user.name.split(" ")[0]}! Don't forget your ${todayMed.name} ${todayMed.frequency}.`;
+        icon = <Pill className="w-4 h-4" />;
+    } else {
+        const lastReport = reports[0];
+        if (lastReport) {
+            const daysSince = Math.floor((Date.now() - new Date(lastReport.uploadedAt).getTime()) / (1000 * 60 * 60 * 24));
+            if (daysSince > 14) {
+                message = "It's been 2 weeks since your last checkup. Consider uploading your latest report.";
+                icon = <FileText className="w-4 h-4" />;
+            }
+        }
+    }
+    
+    if (!message) {
+      message = `Welcome back, ${user.name.split(" ")[0]}! You're at week ${pregWeek}. Ask Maya anything.`;
+      icon = <Baby className="w-4 h-4" />;
+    }
+    
+    if (cancelled) return;
+    
+    setNotification({ message, icon });
+    
+    const updatedProfile = { ...profile, lastNotificationDate: today };
+    setProfile(updatedProfile);
+    saveHealthProfile(user.uid, updatedProfile).catch(() => {});
+    
+    const timer = setTimeout(() => setNotification(null), 5000);
+    return () => clearTimeout(timer);
+  };
+  
+  const cleanupPromise = runNotification();
+  
+  return () => {
+    cancelled = true;
+  };
+}, [user, profile, reports, pregWeek]);
+  
+
+useEffect(() => {
     if (!user || chats.length === 0) return;
     chats.forEach(chat => saveChat(user!.uid, chat));
   }, [chats]);
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [activeId, chats, isTyping]);
-
+  
   const active = useMemo(() => chats.find(c => c.id === activeId) ?? null, [chats, activeId]);
 
-  const filtered = chats.filter(c => !c.archived && c.title.toLowerCase().includes(search.toLowerCase()));
+  const filtered = chats
+    .filter(c => !c.archived && c.title.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => b.createdAt - a.createdAt);
   const pinned = filtered.filter(c => c.pinned);
   const recent = filtered.filter(c => !c.pinned);
 
   const newChat = () => { setActiveId(null); setInput(""); };
-
+  const handleFeedback = (chatId: string, msgId: string, feedback: "up" | "down" | null) => {
+  setChats(prev => prev.map(chat => {
+    if (chat.id !== chatId) return chat;
+    return {
+      ...chat,
+      messages: chat.messages.map(msg => 
+        msg.id === msgId ? { ...msg, feedback } : msg
+      )
+    };
+  }));
+};
   const send = async (text?: string) => {
     const content = (text ?? input).trim();
     if (!content) return;
 
-    const userMsg: Msg = { id: crypto.randomUUID(), role: "user", content };
+    const userMsg: Msg = pendingFile?.name 
+  ? { id: crypto.randomUUID(), role: "user", content, attachedFile: pendingFile.name }
+  : { id: crypto.randomUUID(), role: "user", content };
+
     let chatId = activeId;
     let updated: Chat[];
+    let uploadedReportId: string | null = active?.reportId ?? null;
 
     if (!chatId) {
       const id = crypto.randomUUID();
       chatId = id;
-      updated = [{ id, title: content.slice(0, 40), messages: [userMsg], createdAt: Date.now() }, ...chats];
+      updated = [{
+        id,
+        title: content.slice(0, 40), // ← title is user's message, not filename
+        messages: [userMsg],
+        createdAt: Date.now(),
+      }, ...chats];
     } else {
-      updated = chats.map(c => c.id === chatId ? { ...c, messages: [...c.messages, userMsg] } : c);
+      updated = chats.map(c =>
+        c.id === chatId 
+          ? { ...c, messages: [...c.messages, userMsg], createdAt: Date.now() } // bump createdAt
+          : c
+      );
     }
 
     setChats(updated);
     setActiveId(chatId);
     setInput("");
+    setPendingFile(null); // clear attachment
     setIsTyping(true);
 
     try {
-      const history = (active?.messages ?? [])
+      // if there's a pending file, upload it first before querying
+      if (pendingFile && !uploadedReportId) {
+        const token = await import("firebase/auth").then(m =>
+          m.getAuth().currentUser?.getIdToken()
+        );
+        if (!token) throw new Error("Not authenticated");
+
+        const formData = new FormData();
+        formData.append("file", pendingFile);
+        formData.append("uid", user!.uid);
+        formData.append("week", String(pregWeek));
+        formData.append("token", token);
+
+        const uploadRes = await fetch(`${import.meta.env.VITE_API_URL}/upload-report`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const err = await uploadRes.json();
+          throw new Error(err.detail ?? "Upload failed");
+        }
+
+        const uploadData = await uploadRes.json();
+        uploadedReportId = uploadData.reportId;
+
+        // save report to Firebase + local state
+        const report: Report = {
+          id: uploadData.reportId,
+          fileName: pendingFile.name,
+          uploadedAt: new Date().toISOString(),
+          week: pregWeek,
+          summary: uploadData.summary,
+        };
+        if (user) await saveReport(user.uid, report);
+        setReports(prev => [report, ...prev]);
+
+        // update chat with reportId
+        setChats(prev => prev.map(c =>
+          c.id === chatId ? { ...c, reportId: uploadedReportId! } : c
+        ));
+      }
+
+      const currentChat = updated.find(c => c.id === chatId);
+      const history = (currentChat?.messages ?? [])
         .slice(-6)
         .map(m => ({ role: m.role, content: m.content }));
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/query/stream`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: content, top_k: 5, history, week: pregWeek }),
-      });
+      const isReportChat = !!uploadedReportId;
+      const token = await import("firebase/auth")
+                    .then(m =>
+                    m.getAuth().currentUser?.getIdToken()
+                    );
+                    if (!token) throw new Error("Not authenticated");
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/${isReportChat ? "query-report" : "query/stream"}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            isReportChat
+              ? {
+                question: content,
+                reportId: uploadedReportId,
+                uid: user!.uid,
+                week: pregWeek,
+                history,
+                token,
+                userName: user!.name,
+              }
+              : { question: content, top_k: 5, history, week: pregWeek,uid: user!.uid, token }
+          ),
+        }
+      );
 
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
 
       const aiId = crypto.randomUUID();
       const aiMsg: Msg = { id: aiId, role: "assistant", content: "" };
-      setChats(prev => prev.map(c => c.id === chatId ? { ...c, messages: [...c.messages, aiMsg] } : c));
+      setChats(prev => prev.map(c =>
+        c.id === chatId ? { ...c, messages: [...c.messages, aiMsg] } : c
+      ));
 
       let buffer = "";
       let firstToken = true;
@@ -202,22 +423,87 @@ function ChatPage() {
       }
     } catch (e) {
       setIsTyping(false);
+      const errorMsg: Msg = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Sorry, I couldn't process your file. Please try again or make sure it's a valid PDF under 3MB.",
+      };
+      setChats(prev => prev.map(c =>
+        c.id === chatId ? { ...c, messages: [...c.messages, errorMsg] } : c
+      ));
+      
       toast("Something went wrong. Please try again.");
+    } finally {
+      setIsTyping(false);
     }
+  };
+
+  const handleFileUpload = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/pdf";
+
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      if (file.size > 3 * 1024 * 1024) {
+        toast("File too large. Please upload a PDF under 3MB.");
+        return;
+      }
+
+      // just store it — don't upload yet
+      setPendingFile(file);
+    };
+
+    input.click();
+  };
+  const openReportChat = (report: Report) => {
+    // check if a chat for this report already exists
+    const existing = chats.find(c => c.reportId === report.id);
+    if (existing) {
+      setActiveId(existing.id);
+      return;
+    }
+
+    // create new chat with stored summary as first message
+    const chatId = crypto.randomUUID();
+    const chat: Chat = {
+      id: chatId,
+      title: `${report.fileName}`,
+      createdAt: Date.now(),
+      reportId: report.id,
+      messages: [{
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: report.summary, // stored summary, no new LLM call
+      }],
+    };
+
+    setChats(prev => [chat, ...prev]);
+    setActiveId(chatId);
   };
 
   const togglePin = (id: string) => setChats(c => c.map(x => x.id === id ? { ...x, pinned: !x.pinned } : x));
   const archive = (id: string) => {
-  setChats(c => c.map(x => x.id === id ? { ...x, archived: true } : x));
-  if (activeId === id) setActiveId(null);
-  toast(tr("chat_archived_toast", lang));
-};
+    setChats(c => c.map(x => x.id === id ? { ...x, archived: true } : x));
+    if (activeId === id) setActiveId(null);
+    toast(tr("chat_archived_toast", lang));
+  };
 
-const remove = (id: string) => {
-  setChats(c => c.filter(x => x.id !== id));
-  deleteChat(user!.uid, id);
+  const remove = async (id: string) => {
+  const chatToDelete = chats.find(c => c.id === id);
+  setChats(c => c.filter(x => x.id !== id)); // optimistic
   if (activeId === id) setActiveId(null);
-  toast(tr("chat_deleted_toast", lang));
+  
+  try {
+    await deleteChat(user!.uid, id);
+    toast(tr("chat_deleted_toast", lang));
+  } catch (e) {
+    // rollback on failure
+    if (chatToDelete) setChats(prev => [chatToDelete, ...prev]);
+    toast("Failed to delete chat. Please try again.");
+  }
 };
   const handleLogout = () => { logout(); navigate({ to: "/" }); };
 
@@ -257,12 +543,103 @@ const remove = (id: string) => {
         </div>
 
         <div className="px-3 mt-4 space-y-1">
-          <SidebarLink icon={Activity} label={tr("chat_preg_tracker", lang)}>
-            <PregnancyDialog week={pregWeek} setWeek={setPregWeek} lang={lang}/>
-          </SidebarLink>
-          <SidebarLink icon={ShieldAlert} label={tr("chat_emergency", lang)} badge="!" />
+         {/* <SidebarLink icon={Activity} label={tr("chat_preg_tracker", lang)}> */}
+            
+          <PregnancyTracker
+    week={pregWeek}
+    setWeek={(w) => {
+      setPregWeek(w);
+      if (user) saveUserWeek(user.uid, w);
+    }}
+    lang={lang}
+    user={user}
+    defaultTab={trackerTab}
+    open={trackerOpen}
+    onOpenChange={setTrackerOpen}
+    trigger={
+      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
+        <Activity className="w-4 h-4" />
+        <span className="flex-1 text-left">{tr("chat_preg_tracker", lang)}</span>
+        <span className="text-xs text-muted-foreground">W{pregWeek}</span>
+      </button>
+    }
+  />
+  
+  {/* Appointment reminder */}
+  <AppointmentReminder 
+    appointments={appointments} 
+    week={pregWeek} 
+    uid={user.uid} 
+    lang={lang}
+    enabled={profile?.notifications?.appointment !== false}
+    onClick={() => {
+      setTrackerTab("appointments");
+      setTrackerOpen(true);
+    }}
+/>
         </div>
+        {/* Files section */}
+        {reports.length > 0 && (
+          <div className="px-2 mt-2">
+            <button
+              onClick={() => setFilesExpanded(!filesExpanded)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm"
+            >
+              <FileText className="ml-1 w-4 h-4" />
+              <span className="flex-1 text-left">Files ({reports.length})</span>
+              <span className="text-xs text-muted-foreground">{filesExpanded ? "▲" : "▼"}</span>
+            </button>
 
+            {filesExpanded && (
+              <div className="mt-1 space-y-1 px-1">
+                {reports.map(report => (
+                  <div
+                    key={report.id}
+                    className="group flex items-center gap-1 rounded-lg pr-1 hover:bg-sidebar-accent/60 cursor-pointer"
+                    onClick={() => openReportChat(report)}
+                  >
+                    <div className="flex-1 flex items-center gap-2 px-3 py-2 text-sm min-w-0">
+                      <span className="truncate text-xs">{report.fileName}</span>
+                      <span className="text-xs text-muted-foreground shrink-0">W{report.week}</span>
+                      {/* Optional: show report type icon */}
+                      {report.summary?.includes("prescribed") && (
+                        <Pill className="w-3 h-3 text-primary" />
+                      )}
+                    </div>
+                    <button
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const reportToDelete = report;
+                          setReports(prev => prev.filter(r => r.id !== report.id)); // optimistic
+                          
+                          // Also remove associated chat if exists
+                          const associatedChat = chats.find(c => c.reportId === report.id);
+                          if (associatedChat) {
+                            setChats(prev => prev.filter(c => c.id !== associatedChat.id));
+                            if (activeId === associatedChat.id) setActiveId(null);
+                          }
+                          
+                          try {
+                            if (user) {
+                              await deleteReport(user.uid, report.id);
+                              if (associatedChat) await deleteChat(user.uid, associatedChat.id);
+                            }
+                          } catch (e) {
+                            // rollback
+                            setReports(prev => [reportToDelete, ...prev]);
+                            if (associatedChat) setChats(prev => [associatedChat, ...prev]);
+                            toast("Failed to delete report. Please try again.");
+                          }
+                        }}
+                      >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <div className="flex-1 overflow-y-auto px-2 mt-4">
           {pinned.length > 0 && <SidebarSection label={tr("chat_pinned", lang)} />}
           {pinned.map(c => <ChatItem key={c.id} chat={c} active={c.id === activeId} onSelect={() => setActiveId(c.id)} onPin={() => togglePin(c.id)} onArchive={() => archive(c.id)} onDelete={() => remove(c.id)} lang={lang} />)}
@@ -276,12 +653,7 @@ const remove = (id: string) => {
         </div>
 
         <div className="border-t border-sidebar-border p-3 space-y-1">
-          <button onClick={toggle} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
-            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            {theme === "dark" ? tr("chat_light", lang) : tr("chat_dark", lang)}
-          </button>
-          <LangToggle />
-          <SettingsDialog lang={lang} />
+        <SettingsDialog lang={lang} user={user} onLangChange={() => setLang(lang === "en" ? "bn" : "en")} />
           <button onClick={() => setLogoutOpen(true)} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
             <LogOut className="w-4 h-4" />{tr("chat_logout", lang)}
           </button>
@@ -311,7 +683,15 @@ const remove = (id: string) => {
           </div>
         </div>
       </aside>
-
+          {/* Notification banner */}
+    {notification && (
+      <div className="fixed top-4 left-[60%] -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-500">
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/15 border border-primary/20 text-sm shadow-lg backdrop-blur-sm">
+          <span className="text-primary">{notification.icon}</span>
+          <span className="text-foreground font-medium">{notification.message}</span>
+        </div>
+      </div>
+    )}
       {/* Main */}
       <main className="flex-1 flex flex-col min-w-0">
         {!sidebarOpen && (
@@ -323,8 +703,15 @@ const remove = (id: string) => {
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           {!active ? <Welcome onPick={send} name={user.name} lang={lang} /> : (
             <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-              {active.messages.map(m => <Bubble key={m.id} msg={m} lang={lang} />)}
-              {isTyping && <TypingBubble />}
+              {active.messages.map(m => (
+                <Bubble 
+                  key={m.id} 
+                  msg={m} 
+                  lang={lang} 
+                  onFeedback={(msgId, feedback) => handleFeedback(active.id, msgId, feedback)}
+                />
+              ))}
+              {isTyping && <TypingBubble isReport={!!pendingFile || !!active?.reportId} />}
             </div>
           )}
         </div>
@@ -332,17 +719,41 @@ const remove = (id: string) => {
         <div className="border-t border-border bg-background/80 backdrop-blur">
           <div className="max-w-3xl mx-auto px-4 py-4">
             <div className="rounded-2xl border border-border bg-card shadow-[var(--shadow-soft)] focus-within:ring-2 focus-within:ring-ring/40 transition">
+
+              {/* Attachment chip — only shows when file is selected */}
+              {pendingFile && (
+                <div className="flex items-center gap-2 px-3 pt-3">
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-xs text-primary max-w-xs">
+                    <FileText className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{pendingFile.name}</span>
+                    <button
+                      onClick={() => setPendingFile(null)}
+                      className="ml-1 hover:text-destructive transition-colors shrink-0"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <Textarea
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-                placeholder={tr("chat_placeholder", lang)}
+                placeholder={pendingFile ? "Ask anything about your report..." : tr("chat_placeholder", lang)}
                 className="min-h-[60px] max-h-40 resize-none border-0 bg-transparent rounded-2xl focus-visible:ring-0 shadow-none"
               />
+
               <div className="flex items-center justify-between px-3 pb-2">
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="rounded-lg" onClick={() => toast(tr("chat_attach_soon", lang))}>
-                    <Paperclip className="w-4 h-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-lg"
+                    onClick={handleFileUpload}
+                    disabled={isUploading}
+                  >
+                    <Paperclip className={`w-4 h-4 ${isUploading ? "animate-pulse" : ""}`} />
                   </Button>
                   <Button variant="ghost" size="icon" className="rounded-lg" onClick={() => toast(tr("chat_voice_soon", lang))}>
                     <Mic className="w-4 h-4" />
@@ -353,28 +764,25 @@ const remove = (id: string) => {
                 </Button>
               </div>
             </div>
-           <p className="text-[11px] text-muted-foreground text-center mt-2">
-  {tr("chat_disclaimer", lang)}
-</p>
+            <p className="text-[11px] text-muted-foreground text-center mt-2">
+              {tr("chat_disclaimer", lang)}
+            </p>
 
           </div>
         </div>
       </main>
+      <div className={`fixed inset-0 z-50 transition-opacity duration-500 ${showOnboarding ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+  {showOnboarding && (
+    <OnboardingFlow
+      user={user}
+      onComplete={() => setShowOnboarding(false)}
+    />
+  )}
+</div>
     </div>
   );
 }
-function LangToggle() {
-  const { lang, setLang } = useLang();
-  return (
-    <button
-      onClick={() => setLang(lang === "en" ? "bn" : "en")}
-      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm"
-    >
-      <Languages className="w-4 h-4" />
-      {lang === "en" ? "বাংলা" : "English"}
-    </button>
-  );
-}
+
 
 function SidebarSection({ label }: { label: string }) {
   return <div className="px-3 pt-4 pb-1 text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>;
@@ -417,8 +825,8 @@ function ChatItem({ chat, active, onSelect, onPin, onArchive, onDelete, lang }: 
   );
 }
 
-function Welcome({ onPick, name, lang }: { 
-  onPick: (s: string) => void; name: string; lang: "en" | "bn" 
+function Welcome({ onPick, name, lang }: {
+  onPick: (s: string) => void; name: string; lang: "en" | "bn"
 }) {
   const suggestions = [
     tr("chat_sug1", lang),
@@ -449,47 +857,130 @@ function Welcome({ onPick, name, lang }: {
   );
 }
 
-function Bubble({ msg, lang }: { msg: Msg; lang: "en" | "bn" }) {
+function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeedback?: (msgId: string, feedback: "up" | "down" | null) => void }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(msg.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleFeedback = (type: "up" | "down") => {
+    if (!onFeedback) return;
+    const newFeedback = msg.feedback === type ? null : type;
+    onFeedback(msg.id, newFeedback);
+  };
+
   if (msg.role === "user") {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-br-md bg-primary text-primary-foreground">
-          <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+      <div className="flex flex-col items-end gap-2">
+        {msg.attachedFile && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 text-xs text-primary">
+            <FileText className="w-3.5 h-3.5" />
+            <span>{msg.attachedFile}</span>
+          </div>
+        )}
+        <div className="flex justify-end w-full">
+          <div className="px-4 py-3 rounded-2xl rounded-br-md bg-primary text-primary-foreground max-w-[720px]">
+            <div className="text-sm leading-relaxed whitespace-normal break-words">
+              <ReactMarkdown>{msg.content}</ReactMarkdown>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
   if (!msg.content) return null;
 
+  const uniqueSources = msg.sources
+    ? msg.sources.filter((s, idx, arr) => 
+        arr.findIndex(t => t.source_org === s.source_org && t.pub_year === s.pub_year) === idx
+      )
+    : [];
+
+  const showBoth = msg.feedback === null || msg.feedback === undefined;
+
   return (
-    <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center">
+    <div className="flex gap-3 max-w-none group">
+      <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center mt-1">
         <img src={icon} alt="Maya" className="w-8 h-8" />
       </div>
-      <div className="flex-1 space-y-3">
+      <div className="flex-1 min-w-0 space-y-3">
         {msg.emergency && (
           <div className="flex items-start gap-3 p-4 rounded-2xl bg-destructive/10 border border-destructive/30 text-destructive">
             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
             <div>
-               <div className="font-medium text-sm">{tr("chat_emg_title", lang)}</div>
-  <div className="text-xs opacity-90 mt-1">{tr("chat_emg_sub", lang)}</div>
+              <div className="font-medium text-sm">{tr("chat_emg_title", lang)}</div>
+              <div className="text-xs opacity-90 mt-1">{tr("chat_emg_sub", lang)}</div>
             </div>
           </div>
         )}
-        <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-card border border-border">
-          <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+        
+        <div className="py-2 text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none">
+          <ReactMarkdown>{msg.content}</ReactMarkdown>
         </div>
-        {msg.sources && msg.sources.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-1">
-            {msg.sources.map((s, i) => (
-              <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs text-primary">
-                <span className="font-medium">{s.source_org}</span>
-                <span className="text-muted-foreground">·</span>
-                <span>p.{s.page}</span>
-                <span className="text-muted-foreground">·</span>
-                <span>{s.pub_year}</span>
+
+        {/* Sources + Feedback bar — aligned in one row */}
+        {(uniqueSources.length > 0 || onFeedback) && (
+          <div className="flex items-center justify-between gap-4">
+            {/* Sources */}
+            {uniqueSources.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {uniqueSources.map((s, i) => (
+                  <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] text-primary">
+                    <span className="font-medium">{s.source_org}</span>
+                    <span className="text-muted-foreground">·</span>
+                    {s.pub_year && s.pub_year !== -1 && (
+                      <>
+                        <span>{s.pub_year}</span>
+                      </>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* Feedback buttons */}
+            {onFeedback && (
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <button
+                  onClick={handleCopy}
+                  className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  title="Copy"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+
+                {(showBoth || msg.feedback === "up") && (
+                  <button
+                    onClick={() => handleFeedback("up")}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      msg.feedback === "up" 
+                        ? "text-white" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                    title="Helpful"
+                  >
+                    <ThumbsUp className="w-3.5 h-3.5" />
+                  </button>
+                )}
+
+                {(showBoth || msg.feedback === "down") && (
+                  <button
+                    onClick={() => handleFeedback("down")}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      msg.feedback === "down" 
+                        ? "text-white" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                    title="Not helpful"
+                  >
+                    <ThumbsDown className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -497,23 +988,30 @@ function Bubble({ msg, lang }: { msg: Msg; lang: "en" | "bn" }) {
   );
 }
 
-function TypingBubble() {
+function TypingBubble({ isReport = false }: { isReport?: boolean }) {
   return (
     <div className="flex gap-3">
       <div className="w-8 h-8 rounded-xl flex items-center justify-center">
         <img src={icon} alt="Maya" className="w-8 h-8" />
       </div>
-      <div className="px-4 py-4 rounded-2xl rounded-bl-md bg-card border border-border flex gap-1.5">
-        <span className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" />
-        <span className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" />
-        <span className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" />
+      <div className="px-4 py-4 rounded-2xl rounded-bl-md bg-card border border-border flex flex-col gap-2">
+        {isReport && (
+          <p className="text-xs text-muted-foreground">
+            Reading your report...
+          </p>
+        )}
+        <div className="flex gap-1.5">
+          <span className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" />
+          <span className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" />
+          <span className="typing-dot w-2 h-2 rounded-full bg-muted-foreground" />
+        </div>
       </div>
     </div>
   );
 }
 
-function PregnancyDialog({ week, setWeek, lang }: { 
-  week: number; setWeek: (n: number) => void; lang: "en" | "bn" 
+function PregnancyDialog({ week, setWeek, lang }: {
+  week: number; setWeek: (n: number) => void; lang: "en" | "bn"
 }) {
   const milestones: Record<number, string> = {
     12: tr("pdlg_m12", lang),
@@ -569,39 +1067,61 @@ function PregnancyDialog({ week, setWeek, lang }: {
   );
 }
 
+function AppointmentReminder({ 
+  appointments, 
+  week, 
+  uid, 
+  lang,
+  onClick,
+  enabled = true
+}: { 
+  appointments: Appointment[]; 
+  week: number; 
+  uid: string; 
+  lang: "en" | "bn";
+  onClick: () => void;
+  enabled?: boolean;
+}) {
+  if (!enabled) return null;
+  
+  
+  const now = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-function SettingsDialog({ lang }: { lang: "en" | "bn" }) {
-  const items: [string, string][] = [
-    [tr("settings_voice", lang),    tr("settings_voice_d", lang)],
-    [tr("settings_wearable", lang), tr("settings_wearable_d", lang)],
-    [tr("settings_risk", lang),     tr("settings_risk_d", lang)],
-    [tr("settings_multi", lang),    tr("settings_multi_d", lang)],
-    [tr("settings_offline", lang),  tr("settings_offline_d", lang)],
-  ];
+const upcoming = appointments
+    .filter(a => a.status === "upcoming" && a.date >= now)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const next = upcoming[0];
+  if (!next) return null;
+
+  const days = Math.ceil((new Date(next.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+  // Color based on urgency
+  const isUrgent = days <= 1;
+  const isSoon = days <= 3;
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
-          <Settings className="w-4 h-4" />{tr("chat_settings", lang)}
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{tr("settings_title", lang)}</DialogTitle>
-          <DialogDescription>{tr("settings_desc", lang)}</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 mt-2 text-sm">
-          {items.map(([title, desc]) => (
-            <div key={title} className="flex items-center justify-between p-3 rounded-xl bg-muted/40">
-              <div>
-                <div className="font-medium">{title}</div>
-                <div className="text-xs text-muted-foreground">{desc}</div>
-              </div>
-              <Badge variant="secondary" className="text-xs">{tr("settings_coming", lang)}</Badge>
-            </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <button 
+      onClick={onClick}
+      className={`
+        mx-3 flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left
+        transition-colors cursor-pointer
+        ${isUrgent 
+          ? "bg-red-500/10 hover:bg-red-500/15 text-red-400" 
+          : isSoon 
+            ? "bg-amber-500/10 hover:bg-amber-500/15 text-amber-400"
+            : "bg-primary/10 hover:bg-primary/15 text-primary/80"
+        }
+      `}
+    >
+      <Calendar className="w-3 h-3 shrink-0" />
+      <span className="text-[11px] font-medium truncate flex-1">
+        {next.title}
+      </span>
+      <span className="text-[10px] shrink-0 opacity-70">
+        {days === 0 ? "Today" : days === 1 ? "Tomorrow" : `${days}d`}
+      </span>
+      <ChevronRight className="w-3 h-3 shrink-0 opacity-50" />
+    </button>
   );
 }

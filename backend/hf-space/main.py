@@ -3,12 +3,16 @@ import os
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware # to allow cross-origin requests from frontend; decides which websites are allowed to talk to your API
 from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel # to define the shape of incoming request data (question, history, etc.)
 from dotenv import load_dotenv
 from rag import search
+import pdfplumber
+import uuid
+import io
+import base64
 from llm import build_prompt, call_llm, call_llm_stream
 from auth import verify_token, verify_admin_token
 import json

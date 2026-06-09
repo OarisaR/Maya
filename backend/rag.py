@@ -17,17 +17,30 @@ def search(question: str, top_k: int = 5) -> list:
     embedding = model.encode(question).tolist()
 
     namespaces = [
-        "WHO_PCPNC_3rdEd",
-        "WHO_ANTENATAL_CARE_2017",
-        "Prenatal_Care",
-        "MATERNAL_PREGNANCY_CARE_GUIDE",
-        "SURGEON_GENERAL_CALL_TO_ACTION",
-        "WHO_for_diabetes-patients",
-        "Prepregnancy_Counselling",
-        "WHO_recommendations_2nd_edition",
-        "The_Pregnancy_Book",
-        "levels_of_maternal_care",
-    ]
+    "SURGEON_GENERAL_CALL_TO_ACTION",
+    "CDC_PREGNANCY_FAQ",
+    "NHS_PREGNANCY",
+    "The_Pregnancy_Book",
+    "PREGNANCY_VACCINES",
+    "CDC_MATERNAL_BIRTH_DEFECTS",
+    "CDC_MATERNAL_DIABETES",
+    "PREGNANCY_BOOK_UK_2022",
+    "CDC_PREGNANCY_COMPLICATIONS",
+    "NHS_COMMON_PROBLEMS",
+    "Prenatal_Care",
+    "levels_of_maternal_care",
+    "NHS_BEST_START_IN_LIFE",
+    "WHO_MATERNAL_HEALTH_2017",
+    "ACOG_FAQ",
+    "WHO_PCPNC_3rdEd_2015(MAIN)",
+    "WEEK_BY_WEEK_PREGNANCY_INFO",
+    "WHO_for_diabetes-patients",
+    "CDC_SAFER_FOOD_PREGNANCY",
+    "WHO_recommendations_2nd_edition",
+    "NHS_ULTRASOUND_SCANS",
+    "NHS_MISCARRIAGE",
+    "Prepregnancy_Counselling"
+]
 
     all_chunks = []
 
@@ -48,6 +61,7 @@ def search(question: str, top_k: int = 5) -> list:
                 "section_title": match.metadata.get("section_title", ""),
                 "pub_year": match.metadata.get("pub_year", ""),
                 "doc_id": match.metadata.get("doc_id", ""),
+                "week": match.metadata.get("week", ""), 
                 "namespace": ns,
             })
 

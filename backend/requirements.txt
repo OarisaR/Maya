@@ -5,3 +5,5 @@ sentence-transformers
 python-dotenv
 firebase-admin
 groq
+pdfplumber
+python-multipart
