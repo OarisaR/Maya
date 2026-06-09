@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 # the central controller/orchestrator of entire AI pipeline.
 import os
 from datetime import datetime, timezone
@@ -56,6 +58,24 @@ class QueryRequest(BaseModel): #Defines the shape of data your API
     top_k: int = 5
     history: list = []
     week: int = 24   # default fallback
+
+
+class EmergencyHospitalRequest(BaseModel):
+    lat: float | None = None
+    lng: float | None = None
+    region: str | None = None
+    radius_km: float = 15.0
+    limit: int = 3
+
+
+class Hospital(BaseModel):
+    name: str
+    address: str
+    contact: str
+    ambulance: str
+    lat: float
+    lng: float
+    region: str | None = None
 
 
 class DocsSaveRequest(BaseModel):
@@ -125,6 +145,76 @@ def _docs_to_markdown(docs: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+REGION_MAPPING = {
+    "dhaka": "Dhaka Division",
+    "uttara": "Dhaka Division",
+    "gazipur": "Dhaka Division",
+    "chittagong": "Chattogram Division",
+    "chattogram": "Chattogram Division",
+    "sylhet": "Sylhet Division",
+    "rajshahi": "Rajshahi Division",
+    "khulna": "Khulna Division",
+    "barishal": "Barishal Division",
+    "barisal": "Barishal Division",
+    "rangpur": "Rangpur Division",
+    "mymensingh": "Mymensingh Division",
+}
+
+HOSPITAL_DATABASE: list[Hospital] = [
+    Hospital(name="Dhaka Medical College Hospital", address="Shahbagh, Dhaka", contact="+88 02 9665110", ambulance="+88 02 9665110", lat=23.7357, lng=90.3939, region="Dhaka Division"),
+    Hospital(name="Square Hospital", address="Panthapath, Dhaka", contact="+88 02 9115231", ambulance="+88 02 9115231", lat=23.7516, lng=90.3848, region="Dhaka Division"),
+    Hospital(name="Apollo Hospitals Dhaka", address="Bashundhara, Dhaka", contact="+88 09666778855", ambulance="+88 09666778855", lat=23.8088, lng=90.4245, region="Dhaka Division"),
+    Hospital(name="Chittagong Medical College Hospital", address="Pahartali, Chattogram", contact="+88 031 2517614", ambulance="+88 031 2517614", lat=22.3475, lng=91.8116, region="Chattogram Division"),
+    Hospital(name="Parkview Hospital", address="Panchlaish, Chattogram", contact="+88 031 2877871", ambulance="+88 031 2877871", lat=22.3402, lng=91.8150, region="Chattogram Division"),
+    Hospital(name="Sylhet MAG Osmani Medical College Hospital", address="Mirboxtula, Sylhet", contact="+88 0821 722740", ambulance="+88 0821 722740", lat=24.8949, lng=91.8687, region="Sylhet Division"),
+    Hospital(name="Rajshahi Medical College Hospital", address="Shah Makhdum Avenue, Rajshahi", contact="+88 0721 776236", ambulance="+88 0721 776236", lat=24.3801, lng=88.6046, region="Rajshahi Division"),
+    Hospital(name="Khulna Medical College Hospital", address="Khulna", contact="+88 041 731110", ambulance="+88 041 731110", lat=22.8342, lng=89.5636, region="Khulna Division"),
+    Hospital(name="Rangpur Medical College Hospital", address="Rangpur", contact="+88 0521 61025", ambulance="+88 0521 61025", lat=25.7439, lng=89.2752, region="Rangpur Division"),
+    Hospital(name="Mymensingh Medical College Hospital", address="Mymensingh", contact="+88 091 666391", ambulance="+88 091 666391", lat=24.7471, lng=90.4203, region="Mymensingh Division"),
+]
+
+def _normalize_region(text: str) -> str | None:
+    lookup = text.lower().strip()
+    for key, region in REGION_MAPPING.items():
+        if key in lookup:
+            return region
+    return None
+
+def _distance_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    from math import radians, cos, sin, atan2, sqrt
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lng2 - lng1)
+    a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+    return 6371 * 2 * atan2(sqrt(a), sqrt(1 - a))
+
+def _find_nearest_hospitals(lat: float, lng: float, radius_km: float, limit: int) -> list[Hospital]:
+    nearby = [
+        (h, _distance_km(lat, lng, h.lat, h.lng))
+        for h in HOSPITAL_DATABASE
+    ]
+    filtered = [h for h, d in nearby if d <= radius_km]
+    filtered.sort(key=lambda hospital: _distance_km(lat, lng, hospital.lat, hospital.lng))
+    return filtered[:limit]
+
+def _find_hospitals_by_region(region: str, limit: int) -> list[Hospital]:
+    normalized = region.lower()
+    matches = [h for h in HOSPITAL_DATABASE if h.region and normalized in h.region.lower()]
+    if matches:
+        return matches[:limit]
+    return []
+
+def _find_hospitals_by_text(text: str, limit: int) -> list[Hospital]:
+    normalized = text.lower()
+    matches = [
+        h for h in HOSPITAL_DATABASE
+        if normalized in h.name.lower()
+        or normalized in h.address.lower()
+        or (h.region and normalized in h.region.lower())
+    ]
+    return matches[:limit]
+
+
+
 @app.get("/")
 def root():
     return { "status": "Maya backend running" }
@@ -175,6 +265,21 @@ async def query_stream(req: QueryRequest):
             yield "data: " + json.dumps({"type": "token", "content": token}) + "\n\n"
 
     return StreamingResponse(generate(), media_type="text/event-stream")
+
+
+@app.post("/emergency/hospitals")
+async def emergency_hospitals(req: EmergencyHospitalRequest):
+    hospitals: list[Hospital] = []
+    if req.region:
+        region = _normalize_region(req.region) or req.region
+        hospitals = _find_hospitals_by_region(region, req.limit)
+        if not hospitals:
+            hospitals = _find_hospitals_by_text(req.region, req.limit)
+    if not hospitals and req.lat is not None and req.lng is not None:
+        hospitals = _find_nearest_hospitals(req.lat, req.lng, req.radius_km, req.limit)
+    if not hospitals:
+        hospitals = HOSPITAL_DATABASE[:req.limit]
+    return {"hospitals": hospitals}
 
 
 @app.get("/docs")
