@@ -1,4 +1,5 @@
 ## verify firebase login tokens so that non-authenticated users can't access the API
+import json
 import os
 import firebase_admin
 from firebase_admin import credentials, auth
@@ -7,7 +8,9 @@ from fastapi import HTTPException, Header
 _ADMIN_EMAILS = {email.strip().lower() for email in os.getenv("DOCS_ADMIN_EMAILS", "").split(",") if email.strip()}
 _ADMIN_UIDS = {uid.strip() for uid in os.getenv("DOCS_ADMIN_UIDS", "").split(",") if uid.strip()}
 
-cred = credentials.Certificate("serviceAccount.json")
+firebase_creds = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+
+cred = credentials.Certificate(firebase_creds)
 firebase_admin.initialize_app(cred, {
     "databaseURL": os.getenv("FIREBASE_DATABASE_URL")
 })
