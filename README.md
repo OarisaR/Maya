@@ -206,17 +206,3 @@ Developer notes
 
 Code of Conduct: Be respectful and provide constructive feedback.
 
----
-=======
----
-title: Maya Backend
-emoji: 📊
-colorFrom: green
-colorTo: purple
-sdk: docker
-pinned: false
-license: mit
----
-
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
->>>>>>> 5f752e9b78df869ce6d1f976caff3cfe6c020251
