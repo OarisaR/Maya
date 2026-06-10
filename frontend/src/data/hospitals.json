@@ -1,0 +1,299 @@
+[
+  {
+    "name": "Badda General Hospital Pvt. Ltd.",
+    "address": "107/2, Uttar Badda, Progoti Sarani, Dhaka 1212",
+    "contact": "+88 01790776722",
+    "lat": 23.78471,
+    "lng": 90.42551,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "AIMS Hospital Ltd.",
+    "address": "House No-4, Road No-10, Progoti Shahadat Sharani, Badda, Dhaka 1212",
+    "contact": "+88 01309296186",
+    "lat": 23.77356,
+    "lng": 90.42599,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "AMZ Hospital Ltd.",
+    "address": "Cha-80/3, Progati Sarani, Uttar Badda, Dhaka 1212",
+    "contact": "+88 01847331010",
+    "lat": 23.78447,
+    "lng": 90.42598,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Islami Bank Hospital, Motijheel",
+    "address": "24/B Outer Circular Road, Motijheel, Dhaka 1217",
+    "contact": "+88 01727666741",
+    "lat": 23.73979,
+    "lng": 90.42054,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "The Barakah General Hospital Limited",
+    "address": "937 Outer Circular Road, Shahjahanpur, Dhaka 1217",
+    "contact": "+88 01720045769",
+    "lat": 23.74095,
+    "lng": 90.41923,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Pan Pacific Hospital Ltd.",
+    "address": "24 Outer Circular Road, South Shahjahanpur, Dhaka 1217",
+    "contact": "+88 01716367153",
+    "lat": 23.73859,
+    "lng": 90.42214,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Khidmah Hospital Pvt. Ltd.",
+    "address": "C-287/2-3, Khilgaon Bishwa Road, Dhaka 1219",
+    "contact": "+88 01711063030",
+    "lat": 23.74921,
+    "lng": 90.42024,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Khilgaon General Hospital",
+    "address": "1 Atish Deepankar Road, Khilgaon, Dhaka 1219",
+    "contact": "+88 01759560560",
+    "lat": 23.74343,
+    "lng": 90.42688,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Dhaka Medical College Hospital",
+    "address": "Secretariat Road, Shahbagh, Dhaka",
+    "contact": "+88 02 9665110",
+    "lat": 23.72583,
+    "lng": 90.39743,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Square Hospital",
+    "address": "18/F West Panthapath, Dhaka 1205",
+    "contact": "+88 02 9115231",
+    "lat": 23.75305,
+    "lng": 90.38158,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Evercare Hospital Dhaka",
+    "address": "Plot-81, Block-E, Bashundhara R/A, Dhaka 1229",
+    "contact": "+88 09666778855",
+    "lat": 23.81031,
+    "lng": 90.43131,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Chittagong Medical College Hospital",
+    "address": "K.B. Fazlul Kader Road, Chattogram",
+    "contact": "+88 031 2517614",
+    "lat": 22.3610,
+    "lng": 91.8301,
+    "region": "Chattogram Division"
+  },
+  {
+    "name": "Parkview Hospital",
+    "address": "Panchlaish, Chattogram",
+    "contact": "+88 031 2877871",
+    "lat": 22.3633,
+    "lng": 91.8357,
+    "region": "Chattogram Division"
+  },
+  {
+    "name": "Sylhet MAG Osmani Medical College Hospital",
+    "address": "Medical College Road, Sylhet",
+    "contact": "+88 0821 722740",
+    "lat": 24.90143,
+    "lng": 91.85402,
+    "region": "Sylhet Division"
+  },
+  {
+  "name": "Mount Adora Hospital",
+  "address": "Noyashorok Road, Sylhet 3100",
+  "contact": "+88 09610 858585",
+  "ambulance": "+88 09610 858585",
+  "lat": 24.90167,
+  "lng": 91.87491,
+  "region": "Sylhet Division"
+},
+{
+  "name": "Ibn Sina Hospital Sylhet",
+  "address": "Mirabazar-Subhanighat Road, Sylhet 3100",
+  "contact": "+88 09610 009640",
+  "ambulance": "+88 09610 009640",
+  "lat": 24.89185,
+  "lng": 91.87743,
+  "region": "Sylhet Division"
+},
+  
+  {
+    "name": "Rajshahi Medical College Hospital",
+    "address": "Medical College Road, Rajshahi",
+    "contact": "+88 0721 776236",
+    "lat": 24.37226,
+    "lng": 88.58647,
+    "region": "Rajshahi Division"
+  },
+  {
+  "name": "Islami Bank Medical College Hospital",
+  "address": "Airport Road, Nowdapara, Rajshahi",
+  "contact": "+88 01777 676290",
+  "ambulance": "+88 01777 676290",
+  "lat": 24.41161,
+  "lng": 88.60897,
+  "region": "Rajshahi Division"
+},
+{
+  "name": "Popular Diagnostic Centre & Hospital, Rajshahi",
+  "address": "House 474, Chowdhury Tower,Station Rd, Rajshahi",
+  "contact": "+88 09613 787801",
+  "ambulance": "+88 09613 787801",
+  "lat": 24.37237,
+  "lng": 88.58107,
+  "region": "Rajshahi Division"
+},
+
+  {
+    "name": "Khulna Medical College Hospital",
+    "address": "Khulna",
+    "contact": "+88 041 731110",
+    "lat": 22.82827,
+    "lng": 89.53711,
+    "region": "Khulna Division"
+  },
+  {
+  "name": "Khulna City Medical College Hospital",
+  "address": "25-26 KDA Avenue, Khulna 9100",
+  "contact": "+88 01999 077077",
+  "ambulance": "+88 01999 077077",
+  "lat": 22.81326,
+  "lng": 89.55626,
+  "region": "Khulna Division"
+},
+{
+  "name": "Ad-Din Akij Medical College Hospital",
+  "address": "Boikali, Khulna City Bypass, Khulna",
+  "contact": "+88 01713 488495",
+  "ambulance": "+88 01713 488495",
+  "lat": 22.84126,
+  "lng": 89.53864,
+  "region": "Khulna Division"
+},
+  {
+    "name": "Rangpur Medical College Hospital",
+    "address": "Near Central Jail, Rangpur 5400",
+    "contact": "+88 0521 61025",
+    "lat": 25.76730,
+    "lng": 89.23152,
+    "region": "Rangpur Division"
+  },
+  {
+  "name": "Prime Medical College Hospital",
+  "address": "Prime Medical College, Rangpur 5400",
+  "contact": "+88 01727 870341",
+  "ambulance": "+88 01727 870341",
+  "lat": 25.74393,
+  "lng": 89.22236,
+  "region": "Rangpur Division"
+},
+{
+  "name": "Rangpur Central Hospital",
+  "address": "Rangpur-Dinajpur Highway, Rangpur 5400",
+  "contact": "+88 01711 992732",
+  "ambulance": "+88 01711 992732",
+  "lat": 25.76445,
+  "lng": 89.23276,
+  "region": "Rangpur Division"
+},
+  {
+    "name": "Mymensingh Medical College Hospital",
+    "address": "Charpara, Mymensingh 2200",
+    "contact": "+88 091 666391",
+    "lat": 24.74434,
+    "lng": 90.40956,
+    "region": "Mymensingh Division"
+  },
+  {
+  "name": "Universal Hospital",
+  "address": "Brammopolly Road, Mymensingh",
+  "contact": "+88 01974 939393",
+  "ambulance": "+88 01974 939393",
+  "lat": 24.75337,
+  "lng": 90.41100,
+  "region": "Mymensingh Division"
+},
+{
+  "name": "Sodesh Hospital (Pvt.) Limited",
+  "address": "298/2, Mymensingh 2200",
+  "contact": "+88 09666 777990",
+  "ambulance": "+88 09666 777990",
+  "lat": 24.73572,
+  "lng": 90.40777,
+  "region": "Mymensingh Division"
+},
+{
+  "name": "Sher-E-Bangla Medical College Hospital",
+  "address": "Band Road, Barishal 8200",
+  "contact": "+88 0431 2177771",
+  "ambulance": "+88 0431 2177771",
+  "lat": 22.68634,
+  "lng": 90.36144,
+  "region": "Barishal Division"
+},
+{
+  "name": "Barishal General Hospital",
+  "address": "Hospital Road, Barishal 8200",
+  "contact": "+88 01730 324760",
+  "ambulance": "+88 01730 324760",
+  "lat": 22.70828,
+  "lng": 90.36960,
+  "region": "Barishal Division"
+},
+{
+  "name": "Islami Bank Hospital Barishal",
+  "address": "Rupatali, Barishal 8200",
+  "contact": "+88 01718 237662",
+  "ambulance": "+88 01718 237662",
+  "lat": 22.68934,
+  "lng": 90.336945,
+  "region": "Barishal Division"
+},
+
+  {
+    "name": "Medical Centre Hospital",
+    "address": "953, O.R. Nizam Road, GEC Mor, Panchlaish, Chattogram 4203",
+    "contact": "+880 241355611",
+    "lat": 22.35959,
+    "lng": 91.82298,
+    "region": "Chattogram Division"
+  },
+  {
+    "name": "Chattogram Metropolitan Hospital Ltd.",
+    "address": "698/752, O.R. Nizam Road, GEC, Panchlaish, Chattogram",
+    "contact": "+880 1814651077",
+    "lat": 22.35921,
+    "lng": 91.82353,
+    "region": "Chattogram Division"
+  },
+  {
+  "name": "CSCR Hospital & Diagnostic Center",
+  "address": "1675/A, O.R. Nizam Road, Panchlaish, Chattogram 4000",
+  "contact": "+88 01887 656565",
+  "ambulance": "+88 01887 656565",
+  "lat": 22.36040,
+  "lng": 91.82749,
+  "region": "Chattogram Division"
+},
+  {
+    "name": "Evercare Hospital Chattogram",
+    "address": "Plot No-H1, Anannya CDA Residential Area, Oxygen - Kuwaish Road, Chattogram 4337",
+    "contact": "+880 9612310663",
+    "lat": 22.40213,
+    "lng": 91.84949,
+    "region": "Chattogram Division"
+  }
+]
