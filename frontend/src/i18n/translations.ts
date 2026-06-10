@@ -195,18 +195,18 @@ export const t = {
 
   // ── Chat — Settings dialog ────────────────────────────────────────────────
   settings_title:      { en: "Settings",                bn: "সেটিংস" },
-  settings_desc:       { en: "Personalize your Maya experience.", bn: "আপনার মায়ার অভিজ্ঞতা ব্যক্তিগতকরণ করুন।" },
-  settings_voice:      { en: "Voice AI",                bn: "ভয়েস AI" },
-  settings_voice_d:    { en: "Speak naturally with Maya", bn: "মায়ার সাথে স্বাভাবিকভাবে কথা বলুন" },
-  settings_wearable:   { en: "Wearable integration",   bn: "পরিধানযোগ্য ডিভাইস সংযোগ" },
-  settings_wearable_d: { en: "Connect your health devices", bn: "আপনার স্বাস্থ্য ডিভাইস সংযুক্ত করুন" },
-  settings_risk:       { en: "Smart risk prediction",  bn: "স্মার্ট ঝুঁকি পূর্বাভাস" },
-  settings_risk_d:     { en: "AI-powered early warnings", bn: "AI-চালিত প্রাথমিক সতর্কতা" },
-  settings_multi:      { en: "Multilingual chat",      bn: "বহুভাষিক চ্যাট" },
-  settings_multi_d:    { en: "Talk in your language",  bn: "আপনার ভাষায় কথা বলুন" },
-  settings_offline:    { en: "Offline mode",           bn: "অফলাইন মোড" },
-  settings_offline_d:  { en: "Access core features anywhere", bn: "যেকোনো জায়গায় মূল বৈশিষ্ট্য ব্যবহার করুন" },
-  settings_coming:     { en: "Coming soon",            bn: "শীঘ্রই আসছে" },
+  // settings_desc:       { en: "Personalize your Maya experience.", bn: "আপনার মায়ার অভিজ্ঞতা ব্যক্তিগতকরণ করুন।" },
+  // settings_voice:      { en: "Voice AI",                bn: "ভয়েস AI" },
+  // settings_voice_d:    { en: "Speak naturally with Maya", bn: "মায়ার সাথে স্বাভাবিকভাবে কথা বলুন" },
+  // settings_wearable:   { en: "Wearable integration",   bn: "পরিধানযোগ্য ডিভাইস সংযোগ" },
+  // settings_wearable_d: { en: "Connect your health devices", bn: "আপনার স্বাস্থ্য ডিভাইস সংযুক্ত করুন" },
+  // settings_risk:       { en: "Smart risk prediction",  bn: "স্মার্ট ঝুঁকি পূর্বাভাস" },
+  // settings_risk_d:     { en: "AI-powered early warnings", bn: "AI-চালিত প্রাথমিক সতর্কতা" },
+  // settings_multi:      { en: "Multilingual chat",      bn: "বহুভাষিক চ্যাট" },
+  // settings_multi_d:    { en: "Talk in your language",  bn: "আপনার ভাষায় কথা বলুন" },
+  // settings_offline:    { en: "Offline mode",           bn: "অফলাইন মোড" },
+  // settings_offline_d:  { en: "Access core features anywhere", bn: "যেকোনো জায়গায় মূল বৈশিষ্ট্য ব্যবহার করুন" },
+  // settings_coming:     { en: "Coming soon",            bn: "শীঘ্রই আসছে" },
 
   // ── Pregnancy dialog ──────────────────────────────────────────────────────
   pdlg_title:          { en: "Pregnancy tracker",      bn: "গর্ভাবস্থা ট্র্যাকার" },
@@ -227,6 +227,172 @@ chat_logout_title:   { en: "Log out?",                              bn: "লগ 
 chat_logout_desc:    { en: "You'll need to sign in again to access your chats.", bn: "আপনার চ্যাট অ্যাক্সেস করতে আবার সাইন ইন করতে হবে।" },
 chat_logout_cancel:  { en: "Cancel",                                bn: "বাতিল" },
 chat_logout_confirm: { en: "Log out",                               bn: "লগ আউট" },
+
+
+// ── Settings Dialog ───────────────────────────────────────────────────────
+settings_profile:          { en: "Profile",                    bn: "প্রোফাইল" },
+settings_health:           { en: "Health",                     bn: "স্বাস্থ্য" },
+settings_theme:            { en: "Theme",                      bn: "থিম" },
+settings_language:         { en: "Language",                   bn: "ভাষা" },
+settings_notifications:    { en: "Notifications",              bn: "বিজ্ঞপ্তি" },
+
+// Profile view
+settings_pregnancy_journey:  { en: "Pregnancy Journey",        bn: "গর্ভাবস্থার যাত্রা" },
+settings_current_week:       { en: "Current week",             bn: "বর্তমান সপ্তাহ" },
+settings_week_label:         { en: "Week {week}",              bn: "সপ্তাহ {week}" },
+settings_trimester:          { en: "Trimester",                bn: "ত্রৈমাসিক" },
+settings_trimester_1:        { en: "First trimester",          bn: "প্রথম ত্রৈমাসিক" },
+settings_trimester_2:        { en: "Second trimester",         bn: "দ্বিতীয় ত্রৈমাসিক" },
+settings_trimester_3:        { en: "Third trimester",          bn: "তৃতীয় ত্রৈমাসিক" },
+settings_due_date:           { en: "Due date",                 bn: "প্রসবের তারিখ" },
+settings_member_since:       { en: "Member since",             bn: "সদস্যপদ থেকে" },
+settings_complete_onboarding:{ en: "Complete onboarding to see your pregnancy journey.", bn: "আপনার গর্ভাবস্থার যাত্রা দেখতে অনবোর্ডিং সম্পন্ন করুন।" },
+
+// Health view
+settings_loading:            { en: "Loading...",               bn: "লোড হচ্ছে..." },
+settings_no_profile:         { en: "No health profile found. Complete onboarding first.", bn: "কোনো স্বাস্থ্য প্রোফাইল পাওয়া যায়নি। আগে অনবোর্ডিং সম্পন্ন করুন।" },
+settings_age:                { en: "Age",                      bn: "বয়স" },
+settings_height_cm:          { en: "Height (cm)",              bn: "উচ্চতা (সেমি)" },
+settings_weight_kg:          { en: "Weight (kg)",              bn: "ওজন (কেজি)" },
+settings_due_date_label:     { en: "Expected Due Date",        bn: "প্রত্যাশিত প্রসবের তারিখ" },
+settings_week_of_40:         { en: "Week {week} of 40",        bn: "৪০ এর মধ্যে সপ্তাহ {week}" },
+settings_blood_type:         { en: "Blood Type",               bn: "রক্তের গ্রুপ" },
+settings_blood_type_select:  { en: "Select...",                bn: "নির্বাচন করুন..." },
+settings_blood_type_unknown: { en: "I don't know",             bn: "আমি জানি না" },
+settings_first_pregnancy:    { en: "First pregnancy?",         bn: "প্রথম গর্ভাবস্থা?" },
+settings_yes:                { en: "Yes",                      bn: "হ্যাঁ" },
+settings_no:                 { en: "No",                       bn: "না" },
+settings_previous_losses:    { en: "Previous losses?",         bn: "আগে গর্ভপাত হয়েছে?" },
+settings_conditions:         { en: "Conditions",               bn: "শারীরিক অবস্থা" },
+settings_cond_diabetes:      { en: "Gestational diabetes",     bn: "গর্ভকালীন ডায়াবেটিস" },
+settings_cond_hypertension:  { en: "High blood pressure",      bn: "উচ্চ রক্তচাপ" },
+settings_cond_thyroid:       { en: "Thyroid disorder",         bn: "থাইরয়েড সমস্যা" },
+settings_cond_anaemia:       { en: "Anaemia",                  bn: "রক্তশূন্যতা" },
+settings_medications:        { en: "Medications",              bn: "ওষুধপত্র" },
+settings_no_medications:     { en: "No medications added.",    bn: "কোনো ওষুধ যোগ করা হয়নি।" },
+settings_from_prescription:  { en: "From prescription",        bn: "প্রেসক্রিপশন থেকে" },
+settings_default:            { en: "Default",                  bn: "ডিফল্ট" },
+settings_med_name_ph:        { en: "Medicine name",            bn: "ওষুধের নাম" },
+settings_med_dosage_ph:      { en: "Dosage (e.g., 10mg)",      bn: "ডোজ (যেমন, ১০মিগ্রা)" },
+settings_med_freq_ph:        { en: "Frequency (e.g., Once daily)", bn: "কত বার (যেমন, দিনে একবার)" },
+settings_add_med:            { en: "Add",                      bn: "যোগ করুন" },
+settings_cancel:             { en: "Cancel",                   bn: "বাতিল" },
+settings_add_medication:     { en: "Add medication",           bn: "ওষুধ যোগ করুন" },
+settings_twins:              { en: "Twins?",                   bn: "যমজ?" },
+settings_twins_yes:          { en: "Yes",                      bn: "হ্যাঁ" },
+settings_twins_no:           { en: "No",                       bn: "না" },
+settings_twins_notsure:      { en: "Not sure",                 bn: "নিশ্চিত নই" },
+settings_save_changes:       { en: "Save Changes",             bn: "পরিবর্তন সংরক্ষণ করুন" },
+settings_saving:             { en: "Saving...",                bn: "সংরক্ষণ হচ্ছে..." },
+settings_health_updated:     { en: "Health profile updated",   bn: "স্বাস্থ্য প্রোফাইল আপডেট হয়েছে" },
+
+// Theme view
+settings_dark_mode:          { en: "Dark mode",                bn: "ডার্ক মোড" },
+settings_dark_mode_desc:     { en: "Switch between light and dark appearance", bn: "লাইট ও ডার্ক রূপের মধ্যে পরিবর্তন করুন" },
+
+// Language view
+settings_lang_bengali:       { en: "বাংলা",                   bn: "বাংলা" },
+settings_lang_bengali_desc:  { en: "Switch to Bengali interface", bn: "বাংলা ইন্টারফেসে পরিবর্তন করুন" },
+
+// Notifications view
+settings_notif_medication:   { en: "Medication reminders",     bn: "ওষুধের অনুস্মারক" },
+settings_notif_medication_d: { en: "Daily nudges for your medications", bn: "আপনার ওষুধের জন্য দৈনিক স্মরণ করিয়ে দেওয়া" },
+settings_notif_appointment:  { en: "Appointment reminders",    bn: "অ্যাপয়েন্টমেন্টের অনুস্মারক" },
+settings_notif_appointment_d:{ en: "Show upcoming appointments in sidebar", bn: "সাইডবারে আসন্ন অ্যাপয়েন্টমেন্ট দেখান" },
+
+
+// ── Pregnancy Tracker Dialog ──────────────────────────────────────────────
+tracker_dialog_title:        { en: "Tracker",                         bn: "ট্র্যাকার" },
+tracker_week_of_40_full:     { en: "Week {week} of 40",               bn: "৪০ এর মধ্যে সপ্তাহ {week}" },
+
+// Sidebar nav
+tracker_nav_overview:        { en: "Overview",                        bn: "সংক্ষিপ্ত বিবরণ" },
+tracker_nav_health:          { en: "Health",                          bn: "স্বাস্থ্য" },
+tracker_nav_appointments:    { en: "Appointments",                    bn: "অ্যাপয়েন্টমেন্ট" },
+
+// Overview panel
+tracker_ov_title:            { en: "Overview",                        bn: "সংক্ষিপ্ত বিবরণ" },
+tracker_ov_trimester1:       { en: "First trimester",                 bn: "প্রথম ত্রৈমাসিক" },
+tracker_ov_trimester2:       { en: "Second trimester",                bn: "দ্বিতীয় ত্রৈমাসিক" },
+tracker_ov_trimester3:       { en: "Third trimester",                 bn: "তৃতীয় ত্রৈমাসিক" },
+tracker_ov_baby_size:        { en: "Baby is about the size of a",     bn: "শিশুর আকার প্রায় একটি" },
+tracker_ov_days_left:        { en: "{days} days left",                bn: "{days} দিন বাকি" },
+tracker_ov_due_not_set:      { en: "Due date not set",                bn: "প্রসবের তারিখ নির্ধারিত হয়নি" },
+tracker_ov_percent:          { en: "{percent}% complete",             bn: "{percent}% সম্পূর্ণ" },
+tracker_ov_kg:               { en: "kg",                              bn: "কেজি" },
+tracker_ov_bmi:              { en: "BMI",                             bn: "বিএমআই" },
+tracker_ov_hb:               { en: "Hb",                              bn: "হিমোগ্লোবিন" },
+
+// BMI status labels
+tracker_bmi_underweight:     { en: "Underweight",                     bn: "ওজন কম" },
+tracker_bmi_normal:          { en: "Normal",                          bn: "স্বাভাবিক" },
+tracker_bmi_overweight:      { en: "Overweight",                      bn: "অতিরিক্ত ওজন" },
+tracker_bmi_obese:           { en: "Obese",                           bn: "স্থূলতা" },
+
+// Health panel
+tracker_hp_title:            { en: "Health",                          bn: "স্বাস্থ্য" },
+tracker_hp_snapshot:         { en: "Health Snapshot",                 bn: "স্বাস্থ্য সারাংশ" },
+tracker_hp_bmi:              { en: "BMI",                             bn: "বিএমআই" },
+tracker_hp_weight:           { en: "Weight",                          bn: "ওজন" },
+tracker_hp_blood_type:       { en: "Blood Type",                      bn: "রক্তের গ্রুপ" },
+tracker_hp_due_date:         { en: "Due Date",                        bn: "প্রসবের তারিখ" },
+tracker_hp_weight_gain:      { en: "Weight Gain",                     bn: "ওজন বৃদ্ধি" },
+tracker_hp_starting_weight:  { en: "Starting weight",                 bn: "শুরুর ওজন" },
+tracker_hp_current:          { en: "Current",                         bn: "বর্তমান" },
+tracker_hp_no_weight:        { en: "No weight data yet. Update your weight in settings or upload a report.", bn: "এখনো ওজনের তথ্য নেই। সেটিংসে আপনার ওজন আপডেট করুন বা একটি রিপোর্ট আপলোড করুন।" },
+tracker_hp_one_weight:       { en: "One weight recorded: {weight} kg at week {week}. Update your weight in settings or upload a report to see a chart.", bn: "একটি ওজন রেকর্ড করা হয়েছে: সপ্তাহ {week} এ {weight} কেজি। চার্ট দেখতে সেটিংসে আপনার ওজন আপডেট করুন বা একটি রিপোর্ট আপলোড করুন।" },
+tracker_hp_lab_results:      { en: "Lab Results",                     bn: "ল্যাবের ফলাফল" },
+tracker_hp_no_lab:           { en: "No lab values yet. Upload a medical report to see results.", bn: "এখনো ল্যাবের মান নেই। ফলাফল দেখতে একটি চিকিৎসা রিপোর্ট আপলোড করুন।" },
+tracker_hp_range:            { en: "Range: {range}",                  bn: "সীমা: {range}" },
+tracker_hp_weight_tooltip:   { en: "Weight",                          bn: "ওজন" },
+tracker_hp_week_label:       { en: "Week {week}",                     bn: "সপ্তাহ {week}" },
+
+// Condition badge labels
+tracker_cond_diabetes:       { en: "Gestational diabetes",            bn: "গর্ভকালীন ডায়াবেটিস" },
+tracker_cond_hypertension:   { en: "High blood pressure",             bn: "উচ্চ রক্তচাপ" },
+tracker_cond_thyroid:        { en: "Thyroid disorder",                bn: "থাইরয়েড সমস্যা" },
+tracker_cond_anaemia:        { en: "Anaemia",                         bn: "রক্তশূন্যতা" },
+
+// Lab type labels
+tracker_lab_hb:              { en: "Haemoglobin",                     bn: "হিমোগ্লোবিন" },
+tracker_lab_glucose:         { en: "Fasting Glucose",                 bn: "ফাস্টিং গ্লুকোজ" },
+tracker_lab_tsh:             { en: "TSH",                             bn: "টিএসএইচ" },
+tracker_lab_ferritin:        { en: "Serum Ferritin",                  bn: "সিরাম ফেরিটিন" },
+tracker_lab_urine_protein:   { en: "Urine Protein",                   bn: "ইউরিন প্রোটিন" },
+
+// Appointments panel
+tracker_ap_title:            { en: "Appointments",                    bn: "অ্যাপয়েন্টমেন্ট" },
+tracker_ap_add_btn:          { en: "Add Appointment",                 bn: "অ্যাপয়েন্টমেন্ট যোগ করুন" },
+tracker_ap_add_form_title:   { en: "Add Appointment",                 bn: "অ্যাপয়েন্টমেন্ট যোগ করুন" },
+tracker_ap_type:             { en: "Type",                            bn: "ধরন" },
+tracker_ap_title_label:      { en: "Title",                           bn: "শিরোনাম" },
+tracker_ap_title_ph:         { en: "e.g., Dental checkup",            bn: "যেমন, দাঁতের চেকআপ" },
+tracker_ap_date:             { en: "Date",                            bn: "তারিখ" },
+tracker_ap_time:             { en: "Time (optional)",                 bn: "সময় (ঐচ্ছিক)" },
+tracker_ap_location:         { en: "Location (optional)",             bn: "স্থান (ঐচ্ছিক)" },
+tracker_ap_location_ph:      { en: "e.g., City Hospital",             bn: "যেমন, সিটি হাসপাতাল" },
+tracker_ap_save:             { en: "Save Appointment",                bn: "অ্যাপয়েন্টমেন্ট সংরক্ষণ করুন" },
+tracker_ap_recommended_at:   { en: "Recommended at {week} weeks",     bn: "{week} সপ্তাহে সুপারিশ করা হয়েছে" },
+tracker_ap_add_small:        { en: "Add",                             bn: "যোগ করুন" },
+tracker_ap_dismiss:          { en: "Dismiss",                         bn: "বাতিল করুন" },
+tracker_ap_upcoming:         { en: "Upcoming",                        bn: "আসন্ন" },
+tracker_ap_done:             { en: "Done",                            bn: "সম্পন্ন" },
+tracker_ap_missed:           { en: "Missed",                          bn: "মিস করা" },
+tracker_ap_mark_done:        { en: "Mark Done",                       bn: "সম্পন্ন চিহ্নিত করুন" },
+tracker_ap_completed:        { en: "Completed",                       bn: "সম্পন্ন" },
+tracker_ap_in_days:          { en: "In {days} days",                  bn: "{days} দিনের মধ্যে" },
+tracker_ap_today:            { en: "Today",                           bn: "আজ" },
+tracker_ap_overdue:          { en: "Overdue",                         bn: "মেয়াদোত্তীর্ণ" },
+tracker_ap_days_overdue:     { en: "{days} days overdue",             bn: "{days} দিন মেয়াদোত্তীর্ণ" },
+tracker_ap_no_appointments:  { en: "No appointments yet. Add one or upload a report.", bn: "এখনো কোনো অ্যাপয়েন্টমেন্ট নেই। একটি যোগ করুন বা একটি রিপোর্ট আপলোড করুন।" },
+
+// Appointment type options
+tracker_ap_opt_routine:      { en: "Routine Prenatal Checkup",        bn: "রুটিন প্রিনেটাল চেকআপ" },
+tracker_ap_opt_dating:       { en: "Dating/Viability Scan",           bn: "ডেটিং / ভায়াবিলিটি স্ক্যান" },
+tracker_ap_opt_anomaly:      { en: "Anomaly Scan",                    bn: "অ্যানোমালি স্ক্যান" },
+tracker_ap_opt_gtt:          { en: "Glucose Tolerance Test",          bn: "গ্লুকোজ টলারেন্স টেস্ট" },
+tracker_ap_opt_gbs:          { en: "Group B Strep Swab",              bn: "গ্রুপ বি স্ট্রেপ সোয়াব" },
+tracker_ap_opt_custom:       { en: "Custom",                          bn: "কাস্টম" }
 } as const;
 
 export type TranslationKey = keyof typeof t;

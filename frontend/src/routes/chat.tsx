@@ -240,10 +240,14 @@ useEffect(() => {
     chats.forEach(chat => saveChat(user!.uid, chat));
   }, [chats]);
 
-  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [activeId, chats, isTyping]);
+  
   
   const active = useMemo(() => chats.find(c => c.id === activeId) ?? null, [chats, activeId]);
+  const activeMessages = active?.messages ?? [];
 
+  useEffect(() => { 
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); 
+  }, [activeId, activeMessages.length, isTyping]); // the chat scrolls to bottm only when a new message is added or when a new chat is opened, not on every keystroke
   const filtered = chats
     .filter(c => !c.archived && c.title.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => b.createdAt - a.createdAt);
@@ -962,7 +966,7 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
                     }`}
                     title="Helpful"
                   >
-                    <ThumbsUp className="w-3.5 h-3.5" />
+                    <ThumbsUp className={`w-3.5 h-3.5 ${msg.feedback === "up" ? "fill-current" : ""}`} />
                   </button>
                 )}
 
@@ -976,7 +980,7 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
                     }`}
                     title="Not helpful"
                   >
-                    <ThumbsDown className="w-3.5 h-3.5" />
+                    <ThumbsDown className={`w-3.5 h-3.5 ${msg.feedback === "down" ? "fill-current" : ""}`} />
                   </button>
                 )}
               </div>
