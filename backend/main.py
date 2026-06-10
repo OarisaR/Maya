@@ -118,6 +118,21 @@ async def query_stream(req: QueryRequest):
     _verify_token(req.token, req.uid)
     safety = check_safety(req.question)
     is_emergency = safety["emergency"]
+    #  ── EARLY EXIT: skip RAG entirely if emergency ──
+    if is_emergency:
+        async def emergency_stream():
+            yield "data: " + json.dumps({"type": "emergency"}) + "\n\n"
+            yield "data: " + json.dumps({
+                "type": "token",
+                "content": (
+                    "I've noticed symptoms that may need urgent attention. "
+                    "Please contact your doctor or emergency services immediately.\n\n"
+                    "While you wait: **stay calm**, lie on your left side, "
+                    "and have someone with you if possible.\n\n"
+                    "*This is not a substitute for professional medical advice.*"
+                )
+            }) + "\n\n"
+        return StreamingResponse(emergency_stream(), media_type="text/event-stream")
 
     chunks = search(req.question, req.top_k)
 
@@ -138,6 +153,8 @@ async def query_stream(req: QueryRequest):
 
     def generate():
         yield "data: " + json.dumps({"type": "sources", "content": chunks}) + "\n\n"
+        if is_emergency:
+            yield "data: " + json.dumps({"type": "emergency"}) + "\n\n"
         for token in call_llm_stream(prompt):
             yield "data: " + json.dumps({"type": "token", "content": token}) + "\n\n"
 

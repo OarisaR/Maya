@@ -1,0 +1,178 @@
+[
+  {
+    "name": "Badda General Hospital Pvt. Ltd.",
+    "address": "107/2, Uttar Badda, Progoti Sarani, Dhaka 1212",
+    "contact": "+88 01790776722",
+    "lat": 23.7845,
+    "lng": 90.4257,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "AIMS Hospital Ltd.",
+    "address": "House No-4, Road No-10, Progoti Shahadat Sharani, Badda, Dhaka 1212",
+    "contact": "+88 01309296186",
+    "lat": 23.7800,
+    "lng": 90.4275,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "AMZ Hospital Ltd.",
+    "address": "Cha-80/3, Progati Sarani, Uttar Badda, Dhaka 1212",
+    "contact": "+88 01847331010",
+    "lat": 23.7820,
+    "lng": 90.4240,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Islami Bank Hospital, Motijheel",
+    "address": "24/B Outer Circular Road, Motijheel, Dhaka 1217",
+    "contact": "+88 01727666741",
+    "lat": 23.7337,
+    "lng": 90.4176,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "The Barakah General Hospital Limited",
+    "address": "937 Outer Circular Road, Shahjahanpur, Dhaka 1217",
+    "contact": "+88 01720045769",
+    "lat": 23.7318,
+    "lng": 90.4195,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Pan Pacific Hospital Ltd.",
+    "address": "24 Outer Circular Road, South Shahjahanpur, Dhaka 1217",
+    "contact": "+88 01716367153",
+    "lat": 23.7325,
+    "lng": 90.4185,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Khidmah Hospital Pvt. Ltd.",
+    "address": "C-287/2-3, Khilgaon Bishwa Road, Dhaka 1219",
+    "contact": "+88 01711063030",
+    "lat": 23.7487,
+    "lng": 90.4286,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Khilgaon General Hospital",
+    "address": "1 Atish Deepankar Road, Khilgaon, Dhaka 1219",
+    "contact": "+88 01759560560",
+    "lat": 23.7470,
+    "lng": 90.4300,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "People's Hospital Limited",
+    "address": "5-B Shahid Baki Road, Khilgaon, Dhaka 1219",
+    "contact": "+88 01958586900",
+    "lat": 23.7460,
+    "lng": 90.4275,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Dhaka Medical College Hospital",
+    "address": "Secretariat Road, Shahbagh, Dhaka",
+    "contact": "+88 02 9665110",
+    "lat": 23.7257,
+    "lng": 90.3971,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Square Hospital",
+    "address": "18/F West Panthapath, Dhaka 1205",
+    "contact": "+88 02 9115231",
+    "lat": 23.7519,
+    "lng": 90.3855,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Evercare Hospital Dhaka",
+    "address": "Plot-81, Block-E, Bashundhara R/A, Dhaka 1229",
+    "contact": "+88 09666778855",
+    "lat": 23.8106,
+    "lng": 90.4308,
+    "region": "Dhaka Division"
+  },
+  {
+    "name": "Chittagong Medical College Hospital",
+    "address": "K.B. Fazlul Kader Road, Chattogram",
+    "contact": "+88 031 2517614",
+    "lat": 22.3596,
+    "lng": 91.8308,
+    "region": "Chittagong Division"
+  },
+  {
+    "name": "Parkview Hospital",
+    "address": "Panchlaish, Chattogram",
+    "contact": "+88 031 2877871",
+    "lat": 22.3633,
+    "lng": 91.8357,
+    "region": "Chittagong Division"
+  },
+  {
+    "name": "Sylhet MAG Osmani Medical College Hospital",
+    "address": "Mirboxtula, Sylhet",
+    "contact": "+88 0821 722740",
+    "lat": 24.9005,
+    "lng": 91.8532,
+    "region": "Sylhet Division"
+  },
+  {
+    "name": "Rajshahi Medical College Hospital",
+    "address": "Shah Makhdum Avenue, Rajshahi",
+    "contact": "+88 0721 776236",
+    "lat": 24.3801,
+    "lng": 88.6046,
+    "region": "Rajshahi Division"
+  },
+  {
+    "name": "Khulna Medical College Hospital",
+    "address": "Khulna",
+    "contact": "+88 041 731110",
+    "lat": 22.8342,
+    "lng": 89.5636,
+    "region": "Khulna Division"
+  },
+  {
+    "name": "Rangpur Medical College Hospital",
+    "address": "Rangpur",
+    "contact": "+88 0521 61025",
+    "lat": 25.7439,
+    "lng": 89.2752,
+    "region": "Rangpur Division"
+  },
+  {
+    "name": "Mymensingh Medical College Hospital",
+    "address": "Mymensingh",
+    "contact": "+88 091 666391",
+    "lat": 24.7471,
+    "lng": 90.4203,
+    "region": "Mymensingh Division"
+  },
+  {
+    "name": "Medical Centre Hospital",
+    "address": "953, O.R. Nizam Road, GEC Mor, Panchlaish, Chittagong 4203",
+    "contact": "+880 241355611",
+    "lat": 22.3582,
+    "lng": 91.8225,
+    "region": "Chittagong Division"
+  },
+  {
+    "name": "Chittagong Metropolitan Hospital Ltd.",
+    "address": "698/752, O.R. Nizam Road, GEC, Panchlaish, Chittagong",
+    "contact": "+880 1814651077",
+    "lat": 22.3601,
+    "lng": 91.8214,
+    "region": "Chittagong Division"
+  },
+  {
+    "name": "Evercare Hospital Chittagong",
+    "address": "Plot No-H1, Anannya CDA Residential Area, Oxygen - Kuwaish Road, Chittagong 4337",
+    "contact": "+880 9612310663",
+    "lat": 22.4172,
+    "lng": 91.8340,
+    "region": "Chittagong Division"
+  }
+]

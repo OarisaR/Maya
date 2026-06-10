@@ -4,6 +4,8 @@
 @plugin "@tailwindcss/typography";
 @custom-variant dark (&:is(.dark *));
 
+
+
 @font-face {
   font-family: 'Poppins';
   font-style: normal;
@@ -386,4 +388,50 @@ button.navbar-link {
   border: none;
   cursor: pointer;
   font-family: inherit;
+}
+
+
+/* ── Leaflet dark mode overrides ── */
+.leaflet-popup-content-wrapper {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-card) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: 'Poppins', system-ui, sans-serif !important;
+  font-size: 12px !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--card) !important;
+}
+
+.leaflet-popup-content a {
+  color: var(--primary) !important;
+}
+
+.leaflet-container {
+  font-family: 'Poppins', system-ui, sans-serif !important;
+  background: var(--card) !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+  font-family: 'Poppins', system-ui, sans-serif !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--accent) !important;
+}
+
+.leaflet-attribution-flag {
+  display: none !important;
+}
+
+.leaflet-control-attribution {
+  background: var(--card) !important;
+  color: var(--muted-foreground) !important;
+  font-size: 9px !important;
 }

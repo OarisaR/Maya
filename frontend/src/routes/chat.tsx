@@ -1,10 +1,17 @@
 // chat.tsx
+declare global {   //Eva's Change: Added global declaration for SpeechRecognition
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+import { EmergencyMap } from "@/components/EmergencyMap";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Heart, Plus, Search, MessageCircle, Pin, Archive, Trash2, Settings, LogOut,
-  Activity, AlertTriangle, Send, Mic, Paperclip, Sparkles, Sun, Moon, ChevronRight, ArrowLeft, Bell, 
-  PanelLeftClose, PanelLeft, MoreHorizontal, ShieldAlert, Baby, Languages, Copy, Check, ThumbsUp, ThumbsDown,Pill, FileText, X, Calendar
+  Activity, AlertTriangle, Send, Mic, Paperclip, Sparkles, Sun, Moon, ChevronRight, ArrowLeft, Bell,
+  PanelLeftClose, PanelLeft, MoreHorizontal, ShieldAlert, Baby, Languages, Copy, Check, ThumbsUp, ThumbsDown, Pill, FileText, X, Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +29,7 @@ import { toast } from "sonner";
 import icon from "@/assets/icon.svg";
 import { useLang } from "@/contexts/lang-context";
 import { tr } from "@/i18n/translations";
-import { loadChats, saveChat, deleteChat, saveUserWeek, loadUserWeek, loadReports, saveReport, deleteReport, loadHealthProfile, saveHealthProfile, loadMedications,loadAppointments, type Appointment, type Report, type HealthProfile, getSuggestedAppointments } from "@/lib/chats";
+import { loadChats, saveChat, deleteChat, saveUserWeek, loadUserWeek, loadReports, saveReport, deleteReport, loadHealthProfile, saveHealthProfile, loadMedications, loadAppointments, type Appointment, type Report, type HealthProfile, getSuggestedAppointments } from "@/lib/chats";
 import ReactMarkdown from "react-markdown";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { checkOnboarding } from "@/lib/chats";
@@ -112,10 +119,30 @@ function ChatPage() {
 
 
   const [trackerOpen, setTrackerOpen] = useState(false);
-const [trackerTab, setTrackerTab] = useState<PanelType>("overview");
+  const [trackerTab, setTrackerTab] = useState<PanelType>("overview");
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  
+ const startVoice = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    if (!SpeechRecognition) {
+      toast("Voice input not supported in this browser");
+      return;
+    }
 
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const text = event.results[0][0].transcript;
+      setInput(text);
+
+    };
+
+    recognition.start();
+  };
   // useEffect(() => {
   //   if (typeof window === "undefined") return;
   //   if (loading) return;
@@ -135,118 +162,117 @@ const [trackerTab, setTrackerTab] = useState<PanelType>("overview");
   //   });
   // }, [user, loading, navigate]);
 
-useEffect(() => {
-  if (typeof window === "undefined") return;
-  if (loading) return;
-  if (!user) {
-    navigate({ to: "/login" });
-    return;
-  }
-
-  const run = async () => {
-    const profile = await loadHealthProfile(user.uid);
-    const loadedAppointments = await loadAppointments(user.uid);
-    setAppointments(loadedAppointments);
-    // Auto-calculate week from due date
-    if (profile?.dueDate) {
-      const daysLeft = Math.ceil((new Date(profile.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-      const autoWeek = Math.min(40, Math.max(1, 40 - Math.floor(daysLeft / 7)));
-      setPregWeek(autoWeek);
-      await saveUserWeek(user.uid, autoWeek);
-    } else {
-      const w = await loadUserWeek(user.uid);
-      if (w !== null) setPregWeek(w);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (loading) return;
+    if (!user) {
+      navigate({ to: "/login" });
+      return;
     }
-    weekLoaded.current = true;
 
-    const onboarded = await checkOnboarding(user.uid);
-    setShowOnboarding(!onboarded);
+    const run = async () => {
+      const profile = await loadHealthProfile(user.uid);
+      const loadedAppointments = await loadAppointments(user.uid);
+      setAppointments(loadedAppointments);
+      // Auto-calculate week from due date
+      if (profile?.dueDate) {
+        const daysLeft = Math.ceil((new Date(profile.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        const autoWeek = Math.min(40, Math.max(1, 40 - Math.floor(daysLeft / 7)));
+        setPregWeek(autoWeek);
+        await saveUserWeek(user.uid, autoWeek);
+      } else {
+        const w = await loadUserWeek(user.uid);
+        if (w !== null) setPregWeek(w);
+      }
+      weekLoaded.current = true;
 
-    const loadedChats = await loadChats(user.uid);
-    setChats(loadedChats);
+      const onboarded = await checkOnboarding(user.uid);
+      setShowOnboarding(!onboarded);
 
-    const loadedReports = await loadReports(user.uid);
-    setReports(loadedReports);
-  };
+      const loadedChats = await loadChats(user.uid);
+      setChats(loadedChats);
 
-  run();
-}, [user, loading, navigate]);
+      const loadedReports = await loadReports(user.uid);
+      setReports(loadedReports);
+    };
 
-useEffect(() => {
-  if (!user) return;
-  loadHealthProfile(user.uid).then(p => setProfile(p));
-}, [user]);
+    run();
+  }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadHealthProfile(user.uid).then(p => setProfile(p));
+  }, [user]);
 
 
-useEffect(() => {
-  if (!user || !profile) return;
-  
-  const today = new Date().toISOString().split("T")[0];
-  if (profile.lastNotificationDate === today) return;
-  
-  let cancelled = false;
-  
-  const runNotification = async () => {
-    let message = "";
-    let icon: React.ReactNode = null;
-    
-    const meds = await loadMedications(user.uid);
-    if (cancelled) return;
-    
-    const medEnabled = profile?.notifications?.medication !== false;
-    if (meds.length > 0 && medEnabled) {
+  useEffect(() => {
+    if (!user || !profile) return;
+
+    const today = new Date().toISOString().split("T")[0];
+    if (profile.lastNotificationDate === today) return;
+
+    let cancelled = false;
+
+    const runNotification = async () => {
+      let message = "";
+      let icon: React.ReactNode = null;
+
+      const meds = await loadMedications(user.uid);
+      if (cancelled) return;
+
+      const medEnabled = profile?.notifications?.medication !== false;
+      if (meds.length > 0 && medEnabled) {
         const dayIndex = new Date().getDay();
         const todayMed = meds[dayIndex % meds.length];
         message = `Good morning, ${user.name.split(" ")[0]}! Don't forget your ${todayMed.name} ${todayMed.frequency}.`;
         icon = <Pill className="w-4 h-4" />;
-    } else {
+      } else {
         const lastReport = reports[0];
         if (lastReport) {
-            const daysSince = Math.floor((Date.now() - new Date(lastReport.uploadedAt).getTime()) / (1000 * 60 * 60 * 24));
-            if (daysSince > 14) {
-                message = "It's been 2 weeks since your last checkup. Consider uploading your latest report.";
-                icon = <FileText className="w-4 h-4" />;
-            }
+          const daysSince = Math.floor((Date.now() - new Date(lastReport.uploadedAt).getTime()) / (1000 * 60 * 60 * 24));
+          if (daysSince > 14) {
+            message = "It's been 2 weeks since your last checkup. Consider uploading your latest report.";
+            icon = <FileText className="w-4 h-4" />;
+          }
         }
-    }
-    
-    if (!message) {
-      message = `Welcome back, ${user.name.split(" ")[0]}! You're at week ${pregWeek}. Ask Maya anything.`;
-      icon = <Baby className="w-4 h-4" />;
-    }
-    
-    if (cancelled) return;
-    
-    setNotification({ message, icon });
-    
-    const updatedProfile = { ...profile, lastNotificationDate: today };
-    setProfile(updatedProfile);
-    saveHealthProfile(user.uid, updatedProfile).catch(() => {});
-    
-    const timer = setTimeout(() => setNotification(null), 5000);
-    return () => clearTimeout(timer);
-  };
-  
-  const cleanupPromise = runNotification();
-  
-  return () => {
-    cancelled = true;
-  };
-}, [user, profile, reports, pregWeek]);
-  
+      }
 
-useEffect(() => {
+      if (!message) {
+        message = `Welcome back, ${user.name.split(" ")[0]}! You're at week ${pregWeek}. Ask Maya anything.`;
+        icon = <Baby className="w-4 h-4" />;
+      }
+
+      if (cancelled) return;
+
+      setNotification({ message, icon });
+
+      const updatedProfile = { ...profile, lastNotificationDate: today };
+      setProfile(updatedProfile);
+      saveHealthProfile(user.uid, updatedProfile).catch(() => { });
+
+      const timer = setTimeout(() => setNotification(null), 5000);
+      return () => clearTimeout(timer);
+    };
+
+    const cleanupPromise = runNotification();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, profile, reports, pregWeek]);
+
+
+  useEffect(() => {
     if (!user || chats.length === 0) return;
     chats.forEach(chat => saveChat(user!.uid, chat));
   }, [chats]);
 
-  
-  
+
   const active = useMemo(() => chats.find(c => c.id === activeId) ?? null, [chats, activeId]);
   const activeMessages = active?.messages ?? [];
 
-  useEffect(() => { 
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); 
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [activeId, activeMessages.length, isTyping]); // the chat scrolls to bottm only when a new message is added or when a new chat is opened, not on every keystroke
   const filtered = chats
     .filter(c => !c.archived && c.title.toLowerCase().includes(search.toLowerCase()))
@@ -256,23 +282,23 @@ useEffect(() => {
 
   const newChat = () => { setActiveId(null); setInput(""); };
   const handleFeedback = (chatId: string, msgId: string, feedback: "up" | "down" | null) => {
-  setChats(prev => prev.map(chat => {
-    if (chat.id !== chatId) return chat;
-    return {
-      ...chat,
-      messages: chat.messages.map(msg => 
-        msg.id === msgId ? { ...msg, feedback } : msg
-      )
-    };
-  }));
-};
+    setChats(prev => prev.map(chat => {
+      if (chat.id !== chatId) return chat;
+      return {
+        ...chat,
+        messages: chat.messages.map(msg =>
+          msg.id === msgId ? { ...msg, feedback } : msg
+        )
+      };
+    }));
+  };
   const send = async (text?: string) => {
     const content = (text ?? input).trim();
     if (!content) return;
 
-    const userMsg: Msg = pendingFile?.name 
-  ? { id: crypto.randomUUID(), role: "user", content, attachedFile: pendingFile.name }
-  : { id: crypto.randomUUID(), role: "user", content };
+    const userMsg: Msg = pendingFile?.name
+      ? { id: crypto.randomUUID(), role: "user", content, attachedFile: pendingFile.name }
+      : { id: crypto.randomUUID(), role: "user", content };
 
     let chatId = activeId;
     let updated: Chat[];
@@ -289,7 +315,7 @@ useEffect(() => {
       }, ...chats];
     } else {
       updated = chats.map(c =>
-        c.id === chatId 
+        c.id === chatId
           ? { ...c, messages: [...c.messages, userMsg], createdAt: Date.now() } // bump createdAt
           : c
       );
@@ -352,10 +378,10 @@ useEffect(() => {
 
       const isReportChat = !!uploadedReportId;
       const token = await import("firebase/auth")
-                    .then(m =>
-                    m.getAuth().currentUser?.getIdToken()
-                    );
-                    if (!token) throw new Error("Not authenticated");
+        .then(m =>
+          m.getAuth().currentUser?.getIdToken()
+        );
+      if (!token) throw new Error("Not authenticated");
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/${isReportChat ? "query-report" : "query/stream"}`,
         {
@@ -372,7 +398,7 @@ useEffect(() => {
                 token,
                 userName: user!.name,
               }
-              : { question: content, top_k: 5, history, week: pregWeek,uid: user!.uid, token }
+              : { question: content, top_k: 5, history, week: pregWeek, uid: user!.uid, token }
           ),
         }
       );
@@ -409,7 +435,16 @@ useEffect(() => {
                 )
               } : c
             ));
-          } else if (event.type === "token") {
+          } else if (event.type === "emergency") {
+    setChats(prev => prev.map(c =>
+        c.id === chatId ? {
+            ...c,
+            messages: c.messages.map(m =>
+                m.id === aiId ? { ...m, emergency: true } : m
+            )
+        } : c
+    ));
+  } else if (event.type === "token") {
             if (firstToken) {
               setIsTyping(false);
               firstToken = false;
@@ -423,6 +458,7 @@ useEffect(() => {
               } : c
             ));
           }
+          
         }
       }
     } catch (e) {
@@ -435,7 +471,7 @@ useEffect(() => {
       setChats(prev => prev.map(c =>
         c.id === chatId ? { ...c, messages: [...c.messages, errorMsg] } : c
       ));
-      
+
       toast("Something went wrong. Please try again.");
     } finally {
       setIsTyping(false);
@@ -496,19 +532,19 @@ useEffect(() => {
   };
 
   const remove = async (id: string) => {
-  const chatToDelete = chats.find(c => c.id === id);
-  setChats(c => c.filter(x => x.id !== id)); // optimistic
-  if (activeId === id) setActiveId(null);
-  
-  try {
-    await deleteChat(user!.uid, id);
-    toast(tr("chat_deleted_toast", lang));
-  } catch (e) {
-    // rollback on failure
-    if (chatToDelete) setChats(prev => [chatToDelete, ...prev]);
-    toast("Failed to delete chat. Please try again.");
-  }
-};
+    const chatToDelete = chats.find(c => c.id === id);
+    setChats(c => c.filter(x => x.id !== id)); // optimistic
+    if (activeId === id) setActiveId(null);
+
+    try {
+      await deleteChat(user!.uid, id);
+      toast(tr("chat_deleted_toast", lang));
+    } catch (e) {
+      // rollback on failure
+      if (chatToDelete) setChats(prev => [chatToDelete, ...prev]);
+      toast("Failed to delete chat. Please try again.");
+    }
+  };
   const handleLogout = () => { logout(); navigate({ to: "/" }); };
 
   if (loading) return (
@@ -547,40 +583,40 @@ useEffect(() => {
         </div>
 
         <div className="px-3 mt-4 space-y-1">
-         {/* <SidebarLink icon={Activity} label={tr("chat_preg_tracker", lang)}> */}
-            
+          {/* <SidebarLink icon={Activity} label={tr("chat_preg_tracker", lang)}> */}
+
           <PregnancyTracker
-    week={pregWeek}
-    setWeek={(w) => {
-      setPregWeek(w);
-      if (user) saveUserWeek(user.uid, w);
-    }}
-    lang={lang}
-    user={user}
-    defaultTab={trackerTab}
-    open={trackerOpen}
-    onOpenChange={setTrackerOpen}
-    trigger={
-      <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
-        <Activity className="w-4 h-4" />
-        <span className="flex-1 text-left">{tr("chat_preg_tracker", lang)}</span>
-        <span className="text-xs text-muted-foreground">W{pregWeek}</span>
-      </button>
-    }
-  />
-  
-  {/* Appointment reminder */}
-  <AppointmentReminder 
-    appointments={appointments} 
-    week={pregWeek} 
-    uid={user.uid} 
-    lang={lang}
-    enabled={profile?.notifications?.appointment !== false}
-    onClick={() => {
-      setTrackerTab("appointments");
-      setTrackerOpen(true);
-    }}
-/>
+            week={pregWeek}
+            setWeek={(w) => {
+              setPregWeek(w);
+              if (user) saveUserWeek(user.uid, w);
+            }}
+            lang={lang}
+            user={user}
+            defaultTab={trackerTab}
+            open={trackerOpen}
+            onOpenChange={setTrackerOpen}
+            trigger={
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
+                <Activity className="w-4 h-4" />
+                <span className="flex-1 text-left">{tr("chat_preg_tracker", lang)}</span>
+                <span className="text-xs text-muted-foreground">W{pregWeek}</span>
+              </button>
+            }
+          />
+
+          {/* Appointment reminder */}
+          <AppointmentReminder
+            appointments={appointments}
+            week={pregWeek}
+            uid={user.uid}
+            lang={lang}
+            enabled={profile?.notifications?.appointment !== false}
+            onClick={() => {
+              setTrackerTab("appointments");
+              setTrackerOpen(true);
+            }}
+          />
         </div>
         {/* Files section */}
         {reports.length > 0 && (
@@ -611,31 +647,31 @@ useEffect(() => {
                       )}
                     </div>
                     <button
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          const reportToDelete = report;
-                          setReports(prev => prev.filter(r => r.id !== report.id)); // optimistic
-                          
-                          // Also remove associated chat if exists
-                          const associatedChat = chats.find(c => c.reportId === report.id);
-                          if (associatedChat) {
-                            setChats(prev => prev.filter(c => c.id !== associatedChat.id));
-                            if (activeId === associatedChat.id) setActiveId(null);
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const reportToDelete = report;
+                        setReports(prev => prev.filter(r => r.id !== report.id)); // optimistic
+
+                        // Also remove associated chat if exists
+                        const associatedChat = chats.find(c => c.reportId === report.id);
+                        if (associatedChat) {
+                          setChats(prev => prev.filter(c => c.id !== associatedChat.id));
+                          if (activeId === associatedChat.id) setActiveId(null);
+                        }
+
+                        try {
+                          if (user) {
+                            await deleteReport(user.uid, report.id);
+                            if (associatedChat) await deleteChat(user.uid, associatedChat.id);
                           }
-                          
-                          try {
-                            if (user) {
-                              await deleteReport(user.uid, report.id);
-                              if (associatedChat) await deleteChat(user.uid, associatedChat.id);
-                            }
-                          } catch (e) {
-                            // rollback
-                            setReports(prev => [reportToDelete, ...prev]);
-                            if (associatedChat) setChats(prev => [associatedChat, ...prev]);
-                            toast("Failed to delete report. Please try again.");
-                          }
-                        }}
-                      >
+                        } catch (e) {
+                          // rollback
+                          setReports(prev => [reportToDelete, ...prev]);
+                          if (associatedChat) setChats(prev => [associatedChat, ...prev]);
+                          toast("Failed to delete report. Please try again.");
+                        }
+                      }}
+                    >
                       ×
                     </button>
                   </div>
@@ -657,7 +693,7 @@ useEffect(() => {
         </div>
 
         <div className="border-t border-sidebar-border p-3 space-y-1">
-        <SettingsDialog lang={lang} user={user} onLangChange={() => setLang(lang === "en" ? "bn" : "en")} />
+          <SettingsDialog lang={lang} user={user} onLangChange={() => setLang(lang === "en" ? "bn" : "en")} />
           <button onClick={() => setLogoutOpen(true)} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sm">
             <LogOut className="w-4 h-4" />{tr("chat_logout", lang)}
           </button>
@@ -687,15 +723,15 @@ useEffect(() => {
           </div>
         </div>
       </aside>
-          {/* Notification banner */}
-    {notification && (
-      <div className="fixed top-4 left-[60%] -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-500">
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/15 border border-primary/20 text-sm shadow-lg backdrop-blur-sm">
-          <span className="text-primary">{notification.icon}</span>
-          <span className="text-foreground font-medium">{notification.message}</span>
+      {/* Notification banner */}
+      {notification && (
+        <div className="fixed top-4 left-[60%] -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary/15 border border-primary/20 text-sm shadow-lg backdrop-blur-sm">
+            <span className="text-primary">{notification.icon}</span>
+            <span className="text-foreground font-medium">{notification.message}</span>
+          </div>
         </div>
-      </div>
-    )}
+      )}
       {/* Main */}
       <main className="flex-1 flex flex-col min-w-0">
         {!sidebarOpen && (
@@ -708,10 +744,10 @@ useEffect(() => {
           {!active ? <Welcome onPick={send} name={user.name} lang={lang} /> : (
             <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
               {active.messages.map(m => (
-                <Bubble 
-                  key={m.id} 
-                  msg={m} 
-                  lang={lang} 
+                <Bubble
+                  key={m.id}
+                  msg={m}
+                  lang={lang}
                   onFeedback={(msgId, feedback) => handleFeedback(active.id, msgId, feedback)}
                 />
               ))}
@@ -759,7 +795,7 @@ useEffect(() => {
                   >
                     <Paperclip className={`w-4 h-4 ${isUploading ? "animate-pulse" : ""}`} />
                   </Button>
-                  <Button variant="ghost" size="icon" className="rounded-lg" onClick={() => toast(tr("chat_voice_soon", lang))}>
+                  <Button variant="ghost" size="icon" className="rounded-lg" onClick={startVoice}>
                     <Mic className="w-4 h-4" />
                   </Button>
                 </div>
@@ -776,13 +812,13 @@ useEffect(() => {
         </div>
       </main>
       <div className={`fixed inset-0 z-50 transition-opacity duration-500 ${showOnboarding ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-  {showOnboarding && (
-    <OnboardingFlow
-      user={user}
-      onComplete={() => setShowOnboarding(false)}
-    />
-  )}
-</div>
+        {showOnboarding && (
+          <OnboardingFlow
+            user={user}
+            onComplete={() => setShowOnboarding(false)}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -898,9 +934,9 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
   if (!msg.content) return null;
 
   const uniqueSources = msg.sources
-    ? msg.sources.filter((s, idx, arr) => 
-        arr.findIndex(t => t.source_org === s.source_org && t.pub_year === s.pub_year) === idx
-      )
+    ? msg.sources.filter((s, idx, arr) =>
+      arr.findIndex(t => t.source_org === s.source_org && t.pub_year === s.pub_year) === idx
+    )
     : [];
 
   const showBoth = msg.feedback === null || msg.feedback === undefined;
@@ -911,7 +947,7 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
         <img src={icon} alt="Maya" className="w-8 h-8" />
       </div>
       <div className="flex-1 min-w-0 space-y-3">
-        {msg.emergency && (
+        {/* {msg.emergency && (
           <div className="flex items-start gap-3 p-4 rounded-2xl bg-destructive/10 border border-destructive/30 text-destructive">
             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
             <div>
@@ -919,8 +955,8 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
               <div className="text-xs opacity-90 mt-1">{tr("chat_emg_sub", lang)}</div>
             </div>
           </div>
-        )}
-        
+        )} */}
+        {msg.emergency && <EmergencyMap />}
         <div className="py-2 text-sm leading-relaxed prose prose-sm dark:prose-invert max-w-none">
           <ReactMarkdown>{msg.content}</ReactMarkdown>
         </div>
@@ -959,11 +995,10 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
                 {(showBoth || msg.feedback === "up") && (
                   <button
                     onClick={() => handleFeedback("up")}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      msg.feedback === "up" 
-                        ? "text-white" 
+                    className={`p-1.5 rounded-md transition-colors ${msg.feedback === "up"
+                        ? "text-white"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
+                      }`}
                     title="Helpful"
                   >
                     <ThumbsUp className={`w-3.5 h-3.5 ${msg.feedback === "up" ? "fill-current" : ""}`} />
@@ -973,11 +1008,10 @@ function Bubble({ msg, lang, onFeedback }: { msg: Msg; lang: "en" | "bn"; onFeed
                 {(showBoth || msg.feedback === "down") && (
                   <button
                     onClick={() => handleFeedback("down")}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      msg.feedback === "down" 
-                        ? "text-white" 
+                    className={`p-1.5 rounded-md transition-colors ${msg.feedback === "down"
+                        ? "text-white"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
+                      }`}
                     title="Not helpful"
                   >
                     <ThumbsDown className={`w-3.5 h-3.5 ${msg.feedback === "down" ? "fill-current" : ""}`} />
@@ -1071,27 +1105,27 @@ function PregnancyDialog({ week, setWeek, lang }: {
   );
 }
 
-function AppointmentReminder({ 
-  appointments, 
-  week, 
-  uid, 
+function AppointmentReminder({
+  appointments,
+  week,
+  uid,
   lang,
   onClick,
   enabled = true
-}: { 
-  appointments: Appointment[]; 
-  week: number; 
-  uid: string; 
+}: {
+  appointments: Appointment[];
+  week: number;
+  uid: string;
   lang: "en" | "bn";
   onClick: () => void;
   enabled?: boolean;
 }) {
   if (!enabled) return null;
-  
-  
+
+
   const now = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-const upcoming = appointments
+  const upcoming = appointments
     .filter(a => a.status === "upcoming" && a.date >= now)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -1105,14 +1139,14 @@ const upcoming = appointments
   const isSoon = days <= 3;
 
   return (
-    <button 
+    <button
       onClick={onClick}
       className={`
         mx-3 flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left
         transition-colors cursor-pointer
-        ${isUrgent 
-          ? "bg-red-500/10 hover:bg-red-500/15 text-red-400" 
-          : isSoon 
+        ${isUrgent
+          ? "bg-red-500/10 hover:bg-red-500/15 text-red-400"
+          : isSoon
             ? "bg-amber-500/10 hover:bg-amber-500/15 text-amber-400"
             : "bg-primary/10 hover:bg-primary/15 text-primary/80"
         }
