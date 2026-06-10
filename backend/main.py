@@ -53,16 +53,15 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None) # creates fastapi
 
 app.add_middleware(
     CORSMiddleware,
-    # only these urls can call backend API
     allow_origins=[
         "http://localhost:8081",
         "http://localhost:8080",
         "http://localhost:5173",
-        # add production domain here later
+        "https://maya.orebayet.workers.dev"
     ],
-    allow_credentials=True, #Allows cookies/auth headers.
-    allow_methods=["*"], #Allows all HTTP methods (GET, POST, etc.).
-    allow_headers=["*"], #Allows all headers in requests (like Content-Type, Authorization, etc.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
