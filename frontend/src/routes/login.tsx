@@ -10,7 +10,7 @@ import { useTheme } from "@/lib/theme";
 import { toast } from "sonner";
 import { useLang } from "@/contexts/lang-context";
 import { tr } from "@/i18n/translations";
-import icon from "@/assets/icon.svg";
+import icon from "../assets/icon.svg";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in | Maya" }] }),
