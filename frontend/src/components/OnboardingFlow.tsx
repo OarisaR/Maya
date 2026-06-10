@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Baby, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { saveHealthProfile, saveUserWeek, saveMedication, type HealthProfile, type Medication, seedOnboardingWeight } from "@/lib/chats";
+import { saveHealthProfile, saveUserWeek, saveMedication, type HealthProfile, type Medication } from "@/lib/chats";
 import icon from "@/assets/icon.svg";
 
 type Props = {
@@ -157,7 +157,6 @@ export function OnboardingFlow({ user, onComplete }: Props) {
     };
 
     await saveHealthProfile(user.uid, health);
-    await seedOnboardingWeight(user.uid, healthProfile); 
     await saveUserWeek(user.uid, week);
 
     // Save supplements as medications (NEW)
