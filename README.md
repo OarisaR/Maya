@@ -1,7 +1,5 @@
-<<<<<<< HEAD
-
 <p align="left">
-	<img src="frontend/src/assets/icon.svg" alt="Maya logo" width="120" />
+	<img src="frontend/public/assets/icon.svg" alt="Maya logo" width="120" />
 </p>
 
 
