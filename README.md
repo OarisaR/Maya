@@ -45,7 +45,7 @@ Maya — a safety-first, trimester-aware maternal health assistant that gives ev
 
 ## System architecture flow
 
-![Architecture diagram](frontend/public/assets/architecture.png)
+![Architecture diagram](frontend/src/assets/architecture.png)
 
 React → Firebase login → POST /query or /query/stream → FastAPI → Safety check (Groq safety classifier) → RAG retrieval (Pinecone + embeddings) → Prompt assembly (trimester + history + retrieved context) → LLM (Groq LLaMA) → Response (streamed tokens + separate sources)
 
