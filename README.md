@@ -1,128 +1,284 @@
 <p align="left">
-	<img src="frontend/src/assets/icon.svg" alt="Maya logo" width="120" />
+  <img src="frontend/src/assets/icon.svg" alt="Maya logo" width="120" />
 </p>
-
 
 # Maya — Smart Maternal Health Assistant
 
-Maya is an evidence‑backed, safety‑first conversational assistant for pregnancy care. It pairs a short, auditable safety classifier with retrieval‑augmented generation so answers cite trusted clinical sources and emergencies are escalated before any generative step.
+> A safety-first, trimester-aware AI companion for pregnant women — delivering evidence-backed answers, tracking health vitals, managing medications, and escalating emergencies before any generative step runs.
 
-**Built with:**  
-![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white) ![FastAPI](https://img.shields.io/badge/-FastAPI-009688?logo=fastapi&logoColor=white) ![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white) ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=black) ![Groq](https://img.shields.io/badge/-Groq%20LLaMA-000?logo=groq) ![Pinecone](https://img.shields.io/badge/-Pinecone-000?logo=pinecone)
+🌐 **Live Demo:** [maya.orebayet.workers.dev](https://maya.orebayet.workers.dev/) &nbsp;|&nbsp; **Presentation:** [View on Canva](https://canva.link/vr3uci1cw2psg4w)
 
----
-
-## Project tagline
-
-Maya — a safety-first, trimester-aware maternal health assistant that gives evidence-backed answers, shows sources, and escalates emergencies before any generative step.
-
----
-
-## Features
-
-- Google Sign-In with pregnancy profile setup (gestational week, due date, health conditions, preferred language)
-- RAG-powered chat using curated clinical sources (WHO, ACOG, NHS, local MOHs)
-- Safety escalation layer that detects emergency symptoms before RAG/LLM runs
-- Streaming LLM responses via `call_llm_stream()` for snappy progressive UX
-- Source citations returned separately with each answer (title, excerpt, URL, score)
-- Trimester-aware personalization injected into every prompt
-- Persistent user/session state in Firebase (auth + Realtime DB / Firestore patterns)
+![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white)
+![FastAPI](https://img.shields.io/badge/-FastAPI-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
+![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=black)
+![Groq](https://img.shields.io/badge/-Groq%20LLaMA-000?logo=groq)
+![Pinecone](https://img.shields.io/badge/-Pinecone-000?logo=pinecone)
 
 ---
 
-## Tech stack
+## Table of Contents
 
-| Layer | Technology |
-|---|---|
-| Frontend | React, Vite, TypeScript, TanStack Router, Tailwind-like utilities |
-| Backend | FastAPI, Uvicorn, Pydantic |
-| Auth / Data | Firebase Authentication (Google Sign-In), Realtime Database / Firestore patterns |
-| LLM | Groq LLaMA — Llama 3.3 70B (versatile) via Groq API for response generation |
-| Vector DB / RAG | Pinecone (multi-namespace RAG, 10 namespaces). Embeddings produced with SentenceTransformer `BAAI/bge-m3` for semantic search. Custom RAG pipeline implemented in `backend/rag.py`.
-| Infra / Dev | Docker (Dockerfiles included), SSE streaming for token stream, local .env support |
+- [What is Maya?](#what-is-maya)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+- [Tech Stack](#tech-stack)
+- [Knowledge Base](#knowledge-base)
+- [Safety Escalation](#safety-escalation)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## System architecture flow
+## What is Maya?
+
+Maya is an AI-powered maternal health companion built from the ground up for pregnant women. It combines a **retrieval-augmented generation (RAG)** pipeline over curated clinical documents and verified health websites with a **deterministic safety classifier** that intercepts emergencies *before* any generative step runs — ensuring mothers never receive a hallucinated reassurance when they need real help.
+
+From the moment a user signs in, Maya personalises every interaction around their pregnancy week, health conditions, and uploaded medical history. It isn't just a chatbot — it's a full health management layer: tracking vitals, parsing lab reports, managing medications, sending daily reminders, and visualising health trends across the entire pregnancy journey.
+
+---
+
+## Key Features
+
+### 🧾 Personalised Onboarding Survey
+When a user signs in for the first time, Maya walks them through a structured health survey collecting:
+- Age, blood group, known allergies
+- Current medications and supplements
+- Due date and gestational week
+- Existing conditions (gestational diabetes, hypertension, thyroid disorders, anaemia, etc.)
+- Multiple pregnancy indicators
+
+All of this is saved as a persistent health profile that informs every AI interaction going forward. These settings are editable at any time from the profile panel.
+
+---
+
+### 💬 RAG-Powered AI Chat
+- Answers sourced exclusively from WHO, ACOG, NHS, and other verified clinical guidelines and health websites
+- Trimester-aware prompts — the system knows exactly where you are in your pregnancy and tailors responses accordingly
+- Streaming responses token-by-token for a fast, natural feel
+- Every answer comes with traceable citations (title, excerpt, source URL, relevance score)
+- **Voice input** — speak your question instead of typing, fully supported as an alternative input method
+
+---
+
+### Medical Report Upload & Analysis
+Upload a lab report or prescription PDF and Maya handles the rest:
+
+**Lab Reports**
+- Automatically extracts key clinical values: Haemoglobin (Hb), TSH, Fasting Glucose, Blood Pressure (systolic/diastolic), Serum Ferritin, Urine Protein, Creatinine, and Weight
+- Extracted values are stored directly in the user's health profile and always reflect the latest upload
+- Follow-up questions about any uploaded report are supported in a dedicated report-aware chat context
+
+**Prescriptions**
+- Automatically parses medications prescribed by the doctor — name, brand, dosage, frequency, duration, and instructions
+- Parsed medications are injected directly into the unified medication management system
+
+Lab extraction and report summarisation run **in parallel** via `asyncio.gather()`, cutting upload processing time roughly in half.
+
+---
+
+###  Unified Medication Management
+- Medications from three sources unified in one list: manually added, auto-extracted from prescriptions, and added during onboarding
+- **Daily reminders** shown as a banner on every login — e.g. *"Good morning! Don't forget to take Folic Acid and Iron today"* — rotating through all active medications
+- Full add/delete control over manual medications; prescription medications are read-only to preserve clinical accuracy
+- Single-fire per day — reminders don't spam on multiple logins
+
+---
+
+### Pregnancy & Health Tracker
+
+**Weekly Progress**
+- Baby size comparisons with trimester-aware emoji icons (🥕 week 21, 🍉 week 39, and so on)
+- Visual progress bar with trimester detection (first / second / third)
+- Countdown in days to due date
+
+**Weight Graph**
+- A plotted Recharts line chart pulling weight from multiple sources: manual user input and weights extracted automatically during lab report uploads — all merged into a single weight history with a continuous trend line
+
+**Health Panel**
+- BMI auto-calculated from profile height and weight, with status labels
+- Structured display of all extracted lab values for quick reference
+- Blood type and due date quick-reference cards
+
+**Appointments Tracker**
+- Auto-suggested appointments based on gestational week (dating scan, anomaly scan, GTT, etc.)
+- Full add / complete / dismiss workflow with countdown to each appointment
+- Unread appointment notification badges in the sidebar
+
+---
+
+### Safety Escalation
+A dedicated classifier runs on every message *before* RAG or the LLM is invoked. If an emergency symptom pattern is detected, the system short-circuits the generative pipeline entirely and returns a structured emergency response — no hallucinated reassurance, ever. See [Safety Escalation](#safety-escalation) for full details.
+
+---
+
+### 🌐 Multilingual & Accessible
+- Bengali (বাংলা) / English language toggle with full UI translation via `tr()` function
+- Dark / Light mode with system sync
+- Responsive layout with accessible dialog sizing (`w-[680px] max-w-[90vw]`)
+
+---
+
+### Chat Management
+- New Chat, Pin, Archive, Delete — full control over conversation history
+- Search / filter chats by title
+- Auto-sort by latest activity — most recently active chats float to top
+- All history persisted to Firebase
+- PDF file attachments supported (up to 3MB, drag-and-drop or click)
+
+---
+
+## System Architecture
 
 ![Architecture diagram](https://i.imgur.com/nIvwyLH.png)
 
-React → Firebase login → POST /query or /query/stream → FastAPI → Safety check (Groq safety classifier) → RAG retrieval (Pinecone + embeddings) → Prompt assembly (trimester + history + retrieved context) → LLM (Groq LLaMA) → Response (streamed tokens + separate sources)
+```
+React Frontend
+    → Firebase Google Sign-In + Pregnancy Profile
+    → POST /query/stream  (or /query-report for report-aware chat)
+        → FastAPI Backend
+            → safety.check_safety()         ← Emergency classifier (Groq, low temp, constrained output)
+                ↓ safe
+            → rag.search()                  ← Pinecone multi-namespace retrieval (10 namespaces)
+            → llm.build_prompt()            ← Trimester context + chat history + retrieved chunks
+            → llm.call_llm_stream()         ← Token-delta SSE stream to client
+            → Sources returned separately   ← title, excerpt, URL, relevance score
+```
 
-Sequence notes:
-- Frontend authenticates the user with Google and includes pregnancy profile details (week) in chat requests.
-- Backend `POST /query` and `POST /query/stream` are the primary chat entrypoints.
-- `safety.check_safety()` runs a deterministic classifier to surface emergencies and short‑circuit RAG/LLM when needed.
-- `rag.search()` queries the Pinecone index(s) and returns top chunks with metadata used as citations.
-- `llm.build_prompt()` composes a trimmed prompt including trimester-aware instructions and an emergency override when necessary.
-- `llm.call_llm_stream()` yields token deltas for SSE streaming to the client.
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, Vite, TypeScript, TanStack Router, Tailwind CSS, shadcn/ui |
+| Backend | FastAPI, Uvicorn, Pydantic |
+| Auth / Database | Firebase Authentication (Google Sign-In), Firebase Realtime Database |
+| LLM | Groq API — Llama 3.3 70B (versatile) |
+| Embeddings | SentenceTransformer `BAAI/bge-m3` (multilingual semantic search) |
+| Vector DB / RAG | Pinecone — 10 namespaces, custom pipeline in `backend/rag.py` |
+| PDF Extraction | pdfplumber |
+| Charts | Recharts |
+| Web Scraping | BeautifulSoup, Requests (for NHS knowledge base ingestion) |
+| Infra | Docker, SSE streaming, Cloudflare Workers (frontend hosting) |
 
 ---
 
-## Getting started
+## Knowledge Base
 
-Prerequisites
+Maya's RAG pipeline is built over two complementary data sources — **clinical PDF documents** and **verified health websites** — all embedded using `BAAI/bge-m3` and stored across Pinecone namespaces. Every vector includes metadata (title, heading, excerpt, URL) so citations are always traceable.
+
+### 📄 Clinical PDF Documents
+
+| # | Source |
+|---|---|
+| 1 | WHO Antenatal Care Guidelines (2017, 2nd Edition) |
+| 2 | WHO PCPNC 3rd Edition |
+| 3 | UK Department of Health — The Pregnancy Book (2009) |
+| 4 | Public Health Agency — Pregnancy Care Guide (2022) |
+| 5 | U.S. Surgeon General's Call to Action on Maternal Health (2020) |
+| 6 | WHO Recommendations for Diabetes Patients |
+| 7 | Prepregnancy Counselling Guidelines |
+| 8 | ACOG Prenatal Care Guidelines (2025) |
+| 9 | WHO Recommendations 2nd Edition (2025) |
+| 10 | Levels of Maternal Care Guidelines |
+
+### Verified Health Websites (Web-Scraped)
+
+NHS Best Start in Life — pregnancy content scraped, cleaned, and chunked into the RAG index:
+
+| Topic Area | Pages Indexed |
+|---|---|
+| Preparing for Labour & Birth | Pain relief during labour, signs of labour, hospital bag checklist, choosing where to give birth, giving birth, using a birthing ball, antenatal classes, what to buy for newborn, birth plan, overdue guidance, tips for birthing partners |
+| Healthy Living in Pregnancy | Healthy eating, vitamins and supplements, smoking and alcohol, exercising in pregnancy |
+| Mental & General Health | Mental health in pregnancy, morning sickness, hair dye safety |
+| Partner Support | Advice for partners |
+
+> Scraping uses a polite crawl delay, structured section extraction (heading + body), and noise filtering. Each chunk is stored with full metadata: source org, URL, heading, section path, and relevance level.
+
+---
+
+## Safety Escalation
+
+Maya's safety layer runs on **every single user message** — before RAG, before the LLM.
+
+1. `backend/safety.py` sends the message to a Groq-powered classifier with a system prompt tuned specifically to maternal red-flag symptoms
+2. The classifier runs at **low temperature** with a constrained output format (`{"emergency": true/false}`) for maximum determinism and auditability
+3. If `emergency: true` — the backend short-circuits entirely and returns a structured emergency response that:
+   - Directs the user to seek immediate in-person care
+   - Advises contacting emergency services
+   - Provides calm guidance on what to do while waiting
+   - Clearly states this is not a substitute for medical assessment
+4. Only when `emergency: false` does the normal RAG → prompt assembly → LLM flow proceed
+
+This design eliminates the risk of a generative model producing reassuring-sounding text during a genuine obstetric emergency — the most safety-critical design decision in the entire system.
+
+---
+
+## Getting Started
+
+**Prerequisites**
 - Python 3.10+
 - Node.js 16+ and npm (or pnpm)
-- A Firebase project (Google Sign-In enabled)
-- Pinecone (or alternate vector DB) account and index
-- GROQ API key for Groq LLaMA
+- Firebase project with Google Sign-In enabled
+- Pinecone account and index
+- Groq API key
 
-1) Clone
+### 1. Clone
 
 ```bash
 git clone https://github.com/your-org/maya.git
 cd maya
 ```
 
-2) Backend (FastAPI)
+### 2. Backend
 
 ```bash
 cd backend
 python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
+source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-# create a .env file with the variables listed below
+# Create backend/.env — see Environment Variables below
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-3) Frontend (React / Vite)
+### 3. Frontend
 
 ```bash
 cd frontend
 npm install
 npm run dev
-# open the Vite URL (default http://localhost:5173)
+# Open http://localhost:5173
 ```
 
-4) Seeding the knowledge base (high-level)
+### 4. Seed the Knowledge Base
 
-- Prepare source documents (PDFs / markdown) from WHO or other sites.
-- Use or adapt `backend/rag.py` utilities to embed documents and upsert vectors to Pinecone.
-- Confirm index content by querying via Pinecone dashboard or `rag.search()` locally.
+**PDFs:**
+- Prepare clinical source PDFs (WHO, ACOG, etc.)
+- Use `backend/rag.py` utilities to embed and upsert into Pinecone across your configured namespaces
 
-Notes & quick tips
-- The backend expects a service account JSON for Firebase admin (`serviceAccount.json`) for token verification — keep it private and don’t commit it.
-- The frontend currently contains a Firebase config in `frontend/src/lib/firebase.ts`; for production move these values to env variables and avoid committing secrets.
+**Web content:**
+- Run the NHS scraper notebook (`Maya_web_scraping.ipynb`) to crawl, clean, and chunk NHS pregnancy pages
+- Upsert chunks into the `NHS_BEST_START_IN_LIFE` Pinecone namespace
+
+Verify content via the Pinecone dashboard or `rag.search()` locally.
 
 ---
 
-## Environment variables (.env keys)
+## Environment Variables
 
-Create a `.env` in `backend/` (and `frontend/.env` for client-side config) and DO NOT commit secrets to git. Use secret managers for production.
-
-Required backend keys (examples):
+### `backend/.env`
 
 | Key | Purpose |
-|---:|---|
-| GROQ_API_KEY | Groq LLaMA API key (LLM + safety classifier) |
-| PINECONE_API_KEY | Pinecone API key for vector DB access |
-| PINECONE_INDEX | Pinecone index name used by RAG |
-| GOOGLE_SERVICE_ACCOUNT_JSON | Path to Firebase service account JSON (for backend admin SDK) |
-| DOCS_ADMIN_EMAILS | Comma-separated admin emails for docs admin access |
-
-Example `backend/.env` (do NOT paste real keys into repo):
+|---|---|
+| `GROQ_API_KEY` | Groq API key (LLM + safety classifier) |
+| `PINECONE_API_KEY` | Pinecone API key |
+| `PINECONE_INDEX` | Pinecone index name |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Path to Firebase service account JSON |
+| `DOCS_ADMIN_EMAILS` | Comma-separated admin emails |
 
 ```env
 GROQ_API_KEY=sk_...
@@ -132,16 +288,14 @@ GOOGLE_SERVICE_ACCOUNT_JSON=./serviceAccount.json
 DOCS_ADMIN_EMAILS=you@example.com
 ```
 
-Frontend environment (Vite) — place in `frontend/.env` or `frontend/.env.local`:
+### `frontend/.env`
 
 | Key | Purpose |
-|---:|---|
-| VITE_FIREBASE_API_KEY | Firebase web API key (frontend only) |
-| VITE_FIREBASE_AUTH_DOMAIN | Firebase auth domain |
-| VITE_FIREBASE_PROJECT_ID | Firebase project id |
-| VITE_API_URL | Backend URL (e.g. http://localhost:8000) |
-
-Example `frontend/.env`:
+|---|---|
+| `VITE_FIREBASE_API_KEY` | Firebase web API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_API_URL` | Backend URL (e.g. `http://localhost:8000`) |
 
 ```env
 VITE_FIREBASE_API_KEY=...
@@ -150,44 +304,22 @@ VITE_FIREBASE_PROJECT_ID=...
 VITE_API_URL=http://localhost:8000
 ```
 
-Security reminder: the backend `.env` contains sensitive keys (Pinecone, Groq). Treat them as secrets.
+> Never commit `.env` files or `serviceAccount.json` to version control. Use a secret manager for production deployments.
 
 ---
 
-## Knowledge base sources
+## Contributing
 
-Primary documents embedded and indexed for RAG (stored across 10 Pinecone namespaces):
+Contributions are welcome! To get started:
 
-1. WHO Antenatal Care Guidelines (2017, 2nd Edition)
-2. WHO PCPNC 3rd Edition
-3. UK Department of Health - The Pregnancy Book (2009)
-4. Public Health Agency - Pregnancy Care Guide (2022)
-5. U.S. Surgeon General's Call to Action on Maternal Health (2020)
-6. WHO Recommendations for Diabetes Patients
-7. Prepregnancy Counselling Guidelines
-8. ACOG Prenatal Care Guidelines (2025)
-9. WHO Recommendations 2nd Edition (2025)
-10. Levels of Maternal Care Guidelines
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Commit your changes: `git commit -m "feat: describe your change"`
+4. Push to your branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request with a clear description of what changed and why
 
-Technical notes:
-- All documents were embedded using the SentenceTransformer model `BAAI/bge-m3` (multilingual embeddings) and upserted into Pinecone across 10 namespaces (see `backend/rag.py` for namespace list).
-- LLM used for answer generation: Llama 3.3 70B (versatile) via the Groq API (`llm.call_llm` / `llm.call_llm_stream`).
-- RAG pipeline: custom retrieval implemented in `backend/rag.py` (embedding -> Pinecone query -> chunk aggregation) and orchestrated by `backend/main.py`.
-
-The repository stores metadata with each vector so the backend can return traceable citations (title, excerpt, URL, score) alongside generated answers.
+For major features, please open an issue first to discuss the approach before investing time in implementation.
 
 ---
 
-## Safety escalation (how it works)
-
-1. Incoming chat text is first passed to `backend/safety.py` which runs a deterministic LLM-based safety classifier (Groq) using a system prompt tuned to maternal red flags.
-2. If the classifier returns `{"emergency": true}`, the backend short-circuits the normal RAG → LLM flow and returns an emergency template (or forces the LLM to respond with emergency instructions for streaming endpoints).
-3. Emergency responses emphasize: seek immediate care, contact emergency services, what to do while waiting (calm language), and clearly state _this is not a substitute for in‑person medical assessment_.
-
-Design rationale:
-- Avoids hallucinated reassurance by preventing the RAG/LLM from generating non-audited text during emergencies.
-- Classifier operates with low temperature and a constrained output format to improve determinism and auditability.
-
----
-
-
+<p align="center">Built with ❤️ for mothers, by a team that cares about maternal health.</p>
