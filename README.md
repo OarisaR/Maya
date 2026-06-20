@@ -45,7 +45,7 @@ Maya — a safety-first, trimester-aware maternal health assistant that gives ev
 
 ## System architecture flow
 
-![Architecture diagram](frontend/src/assets/architecture.png)
+![Architecture diagram](https://i.imgur.com/nIvwyLH.png)
 
 React → Firebase login → POST /query or /query/stream → FastAPI → Safety check (Groq safety classifier) → RAG retrieval (Pinecone + embeddings) → Prompt assembly (trimester + history + retrieved context) → LLM (Groq LLaMA) → Response (streamed tokens + separate sources)
 
@@ -190,19 +190,4 @@ Design rationale:
 
 ---
 
-## Contributing
-
-We welcome contributions. Recommended workflow:
-
-1. Open an issue describing the feature or bug.
-2. Fork the repo and create a branch: `git checkout -b feat/short-description`.
-3. Run tests and linters locally; add unit tests for backend changes when applicable.
-4. Open a pull request referencing the issue and providing testing notes.
-5. Maintain code style: follow existing TypeScript and Python idioms used across the repo.
-
-Developer notes
-- Do not commit real API keys or `serviceAccount.json` to version control.
-- If you add new env keys, update `README.md` and create/update `backend/.env.example` and `frontend/.env.example`.
-
-Code of Conduct: Be respectful and provide constructive feedback.
 
