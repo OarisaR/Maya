@@ -6,7 +6,7 @@
 
 > A safety-first, trimester-aware AI companion for pregnant women — delivering evidence-backed answers, tracking health vitals, managing medications, and escalating emergencies before any generative step runs.
 
-🌐 **Live Demo:** [maya.orebayet.workers.dev](https://maya.orebayet.workers.dev/) &nbsp;|&nbsp; **Presentation:** [View on Canva](https://canva.link/vr3uci1cw2psg4w)
+**Live Demo:** [maya.orebayet.workers.dev](https://maya.orebayet.workers.dev/) &nbsp;|&nbsp; **Presentation:** [View on Canva](https://canva.link/vr3uci1cw2psg4w)
 
 ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -45,9 +45,9 @@ From the moment a user signs in, Maya personalises every interaction around thei
 
 ## Key Features
 
-### 🧾 Personalised Onboarding Survey
+### Personalised Onboarding Survey
 When a user signs in for the first time, Maya walks them through a structured health survey collecting:
-- Age, blood group, known allergies
+- Age, blood group
 - Current medications and supplements
 - Due date and gestational week
 - Existing conditions (gestational diabetes, hypertension, thyroid disorders, anaemia, etc.)
@@ -57,11 +57,11 @@ All of this is saved as a persistent health profile that informs every AI intera
 
 ---
 
-### 💬 RAG-Powered AI Chat
-- Answers sourced exclusively from WHO, ACOG, NHS, and other verified clinical guidelines and health websites
+### RAG-Powered AI Chat
+- Answers sourced exclusively from WHO, ACOG, CDC, NHS, and other verified clinical guidelines and health websites
 - Trimester-aware prompts — the system knows exactly where you are in your pregnancy and tailors responses accordingly
 - Streaming responses token-by-token for a fast, natural feel
-- Every answer comes with traceable citations (title, excerpt, source URL, relevance score)
+- Every answer comes with traceable citations 
 - **Voice input** — speak your question instead of typing, fully supported as an alternative input method
 
 ---
@@ -70,7 +70,7 @@ All of this is saved as a persistent health profile that informs every AI intera
 Upload a lab report or prescription PDF and Maya handles the rest:
 
 **Lab Reports**
-- Automatically extracts key clinical values: Haemoglobin (Hb), TSH, Fasting Glucose, Blood Pressure (systolic/diastolic), Serum Ferritin, Urine Protein, Creatinine, and Weight
+- Automatically extracts key clinical values: Haemoglobin (Hb), TSH, Fasting Glucose, Serum Ferritin, Urine Protein, Creatinine, and Weight
 - Extracted values are stored directly in the user's health profile and always reflect the latest upload
 - Follow-up questions about any uploaded report are supported in a dedicated report-aware chat context
 
@@ -82,7 +82,7 @@ Lab extraction and report summarisation run **in parallel** via `asyncio.gather(
 
 ---
 
-###  Unified Medication Management
+### Unified Medication Management
 - Medications from three sources unified in one list: manually added, auto-extracted from prescriptions, and added during onboarding
 - **Daily reminders** shown as a banner on every login — e.g. *"Good morning! Don't forget to take Folic Acid and Iron today"* — rotating through all active medications
 - Full add/delete control over manual medications; prescription medications are read-only to preserve clinical accuracy
@@ -90,7 +90,7 @@ Lab extraction and report summarisation run **in parallel** via `asyncio.gather(
 
 ---
 
-### Pregnancy & Health Tracker
+### 📈 Pregnancy & Health Tracker
 
 **Weekly Progress**
 - Baby size comparisons with trimester-aware emoji icons (🥕 week 21, 🍉 week 39, and so on)
@@ -113,14 +113,14 @@ Lab extraction and report summarisation run **in parallel** via `asyncio.gather(
 ---
 
 ### Safety Escalation
-A dedicated classifier runs on every message *before* RAG or the LLM is invoked. If an emergency symptom pattern is detected, the system short-circuits the generative pipeline entirely and returns a structured emergency response — no hallucinated reassurance, ever. See [Safety Escalation](#safety-escalation) for full details.
+A dedicated classifier runs on every message *before* RAG or the LLM is invoked. If an emergency symptom pattern is detected, the system short-circuits the generative pipeline entirely and returns a structured emergency response — no hallucinated reassurance, ever. 
 
 ---
 
-### 🌐 Multilingual & Accessible
-- Bengali (বাংলা) / English language toggle with full UI translation via `tr()` function
+### Multilingual & Accessible
+- Bengali (বাংলা) / English language toggle with full UI translation
 - Dark / Light mode with system sync
-- Responsive layout with accessible dialog sizing (`w-[680px] max-w-[90vw]`)
+- Responsive layout with accessible dialog sizing
 
 ---
 
@@ -144,7 +144,7 @@ React Frontend
         → FastAPI Backend
             → safety.check_safety()         ← Emergency classifier (Groq, low temp, constrained output)
                 ↓ safe
-            → rag.search()                  ← Pinecone multi-namespace retrieval (10 namespaces)
+            → rag.search()                  ← Pinecone multi-namespace retrieval (23 namespaces)
             → llm.build_prompt()            ← Trimester context + chat history + retrieved chunks
             → llm.call_llm_stream()         ← Token-delta SSE stream to client
             → Sources returned separately   ← title, excerpt, URL, relevance score
@@ -155,49 +155,57 @@ React Frontend
 | Layer | Technology |
 |---|---|
 | Frontend | React, Vite, TypeScript, TanStack Router, Tailwind CSS, shadcn/ui |
-| Backend | FastAPI, Uvicorn, Pydantic |
+| Backend | FastAPI, Uvicorn |
 | Auth / Database | Firebase Authentication (Google Sign-In), Firebase Realtime Database |
 | LLM | Groq API — Llama 3.3 70B (versatile) |
-| Embeddings | SentenceTransformer `BAAI/bge-m3` (multilingual semantic search) |
-| Vector DB / RAG | Pinecone — 10 namespaces, custom pipeline in `backend/rag.py` |
+| Embedding Model |  `BAAI/bge-m3` (multilingual semantic search) |
+| Vector DB / RAG | Pinecone |
 | PDF Extraction | pdfplumber |
-| Charts | Recharts |
-| Web Scraping | BeautifulSoup, Requests (for NHS knowledge base ingestion) |
+| Web Scraping | BeautifulSoup, Requests|
 | Infra | Docker, SSE streaming, Cloudflare Workers (frontend hosting) |
 
 ---
 
 ## Knowledge Base
 
-Maya's RAG pipeline is built over two complementary data sources — **clinical PDF documents** and **verified health websites** — all embedded using `BAAI/bge-m3` and stored across Pinecone namespaces. Every vector includes metadata (title, heading, excerpt, URL) so citations are always traceable.
+Maya's RAG pipeline is built over **23 Pinecone namespaces** spanning two complementary data source types — authoritative clinical PDF documents and verified health websites scraped and chunked at the section level. All content is embedded using `BAAI/bge-m3` for strong multilingual semantic search. Every vector stores rich metadata (source org, heading, URL, section path) so every citation is fully traceable.
 
-### 📄 Clinical PDF Documents
+### Clinical PDF Documents
 
-| # | Source |
-|---|---|
-| 1 | WHO Antenatal Care Guidelines (2017, 2nd Edition) |
-| 2 | WHO PCPNC 3rd Edition |
-| 3 | UK Department of Health — The Pregnancy Book (2009) |
-| 4 | Public Health Agency — Pregnancy Care Guide (2022) |
-| 5 | U.S. Surgeon General's Call to Action on Maternal Health (2020) |
-| 6 | WHO Recommendations for Diabetes Patients |
-| 7 | Prepregnancy Counselling Guidelines |
-| 8 | ACOG Prenatal Care Guidelines (2025) |
-| 9 | WHO Recommendations 2nd Edition (2025) |
-| 10 | Levels of Maternal Care Guidelines |
+| Namespace | Source | Chunks |
+|---|---|---|
+| `WHO_MATERNAL_HEALTH_2017` | WHO Antenatal Care Guidelines, 2nd Edition (2017) | 321 |
+| `WHO_PCPNC_3rdEd_2015(MAIN)` | WHO PCPNC 3rd Edition (2015) | 742 |
+| `WHO_for_diabetes-patients` | WHO Recommendations for Diabetes Patients | 584 |
+| `WHO_recommendations_2nd_edition` | WHO Recommendations, 2nd Edition (2025) | 2,254 |
+| `ACOG_FAQ` | ACOG Prenatal Care Guidelines & FAQs (2025) | 310 |
+| `levels_of_maternal_care` | Levels of Maternal Care Guidelines | 162 |
+| `Prepregnancy_Counselling` | Prepregnancy Counselling Guidelines | 151 |
+| `Prenatal_Care` | Prenatal Care Reference Document | 136 |
+| `SURGEON_GENERAL_CALL_TO_ACTION` | U.S. Surgeon General's Call to Action on Maternal Health (2020) | 1,118 |
+| `The_Pregnancy_Book` | UK Department of Health — The Pregnancy Book (2009) | 1,949 |
+| `PREGNANCY_BOOK_UK_2022` | Public Health Agency — Pregnancy Care Guide (2022) | 1,589 |
+| `PREGNANCY_VACCINES` | Pregnancy Vaccines Reference Guidelines | 337 |
+| `WEEK_BY_WEEK_PREGNANCY_INFO` | Week-by-Week Pregnancy Information | 1,091 |
 
 ### Verified Health Websites (Web-Scraped)
 
-NHS Best Start in Life — pregnancy content scraped, cleaned, and chunked into the RAG index:
+All web content is scraped using a structured section-by-section pipeline (BeautifulSoup), cleaned of noise, chunked by heading, and upserted into dedicated Pinecone namespaces.
 
-| Topic Area | Pages Indexed |
-|---|---|
-| Preparing for Labour & Birth | Pain relief during labour, signs of labour, hospital bag checklist, choosing where to give birth, giving birth, using a birthing ball, antenatal classes, what to buy for newborn, birth plan, overdue guidance, tips for birthing partners |
-| Healthy Living in Pregnancy | Healthy eating, vitamins and supplements, smoking and alcohol, exercising in pregnancy |
-| Mental & General Health | Mental health in pregnancy, morning sickness, hair dye safety |
-| Partner Support | Advice for partners |
+| Namespace | Source | Chunks |
+|---|---|---|
+| `CDC_PREGNANCY_FAQ` | CDC — Pregnancy FAQs | 215 |
+| `CDC_MATERNAL_BIRTH_DEFECTS` | CDC — Maternal Birth Defects | 11 |
+| `CDC_MATERNAL_DIABETES` | CDC — Maternal Diabetes | 40 |
+| `CDC_PREGNANCY_COMPLICATIONS` | CDC — Pregnancy Complications | 374 |
+| `CDC_SAFER_FOOD_PREGNANCY` | CDC — Safer Food During Pregnancy | 23 |
+| `NHS_PREGNANCY` | NHS — Pregnancy Hub | 597 |
+| `NHS_BEST_START_IN_LIFE` | NHS — Best Start in Life (Labour, Nutrition, Mental Health) | 109 |
+| `NHS_COMMON_PROBLEMS` | NHS — Common Pregnancy Problems | 82 |
+| `NHS_ULTRASOUND_SCANS` | NHS — Ultrasound Scans in Pregnancy | 13 |
+| `NHS_MISCARRIAGE` | NHS — Miscarriage | 16 |
 
-> Scraping uses a polite crawl delay, structured section extraction (heading + body), and noise filtering. Each chunk is stored with full metadata: source org, URL, heading, section path, and relevance level.
+> **Total indexed chunks: ~12,879** across 23 namespaces from WHO, ACOG, CDC, NHS, the U.S. Surgeon General, and UK health authorities.
 
 ---
 
@@ -214,7 +222,7 @@ Maya's safety layer runs on **every single user message** — before RAG, before
    - Clearly states this is not a substitute for medical assessment
 4. Only when `emergency: false` does the normal RAG → prompt assembly → LLM flow proceed
 
-This design eliminates the risk of a generative model producing reassuring-sounding text during a genuine obstetric emergency — the most safety-critical design decision in the entire system.
+This design eliminates the risk of a generative model producing reassuring-sounding text during a genuine obstetric emergency — the most safety-critical decision in the entire system.
 
 ---
 
@@ -257,12 +265,13 @@ npm run dev
 ### 4. Seed the Knowledge Base
 
 **PDFs:**
-- Prepare clinical source PDFs (WHO, ACOG, etc.)
-- Use `backend/rag.py` utilities to embed and upsert into Pinecone across your configured namespaces
+- Prepare clinical source PDFs (WHO, ACOG, Surgeon General, etc.)
+- Use `backend/rag.py` utilities to embed and upsert into Pinecone, one namespace per document
 
 **Web content:**
 - Run the NHS scraper notebook (`Maya_web_scraping.ipynb`) to crawl, clean, and chunk NHS pregnancy pages
-- Upsert chunks into the `NHS_BEST_START_IN_LIFE` Pinecone namespace
+- Run equivalent scrapers for CDC namespaces (`CDC_PREGNANCY_FAQ`, `CDC_PREGNANCY_COMPLICATIONS`, etc.)
+- Upsert each source into its corresponding Pinecone namespace
 
 Verify content via the Pinecone dashboard or `rag.search()` locally.
 
