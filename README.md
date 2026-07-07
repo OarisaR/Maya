@@ -6,7 +6,7 @@
 
 > A safety-first, trimester-aware AI companion for pregnant women — delivering evidence-backed answers, tracking health vitals, managing medications, and escalating emergencies before any generative step runs.
 
-**Live Demo:** [maya.orebayet.workers.dev](https://maya.orebayet.workers.dev/) &nbsp;|&nbsp; **Presentation:** [View on Canva](https://canva.link/vr3uci1cw2psg4w)
+**Live Demo:** [maya.orebayet.workers.dev](https://maya.orebayet.workers.dev/) &nbsp;|&nbsp; **Concept video:** [Watch on YouTube](https://youtu.be/5fSn9PKbyHI?si=dudIN9NcpjU6J7mc)
 
 ![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
