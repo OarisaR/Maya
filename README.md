@@ -90,7 +90,7 @@ Lab extraction and report summarisation run **in parallel** via `asyncio.gather(
 
 ---
 
-### 📈 Pregnancy & Health Tracker
+### Pregnancy & Health Tracker
 
 **Weekly Progress**
 - Baby size comparisons with trimester-aware emoji icons (🥕 week 21, 🍉 week 39, and so on)
